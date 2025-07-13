@@ -1,93 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login Option - Zamsurgea Community</title>
-  <link rel="icon" type="image/png" href="tab-logo.png">
-  <link rel="stylesheet" href="loginoption.css">
-</head>
-<body>
-  <header>
-    <div class="logo">
-      <h1>Zamsurgea Community</h1>
-      <p>Multi-Purpose</p>
-      <p>Cooperative</p>
-    </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Option - Zamsurgea Community</title>
+    <link rel="icon" type="image/png" href="/img/tab-logo.png" />
+    <link rel="stylesheet" href="/styles/loginoption.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <h1>Zamsurgea Community</h1>
+        <p>Multi-Purpose</p>
+        <p>Cooperative</p>
+      </div>
 
-    <nav>
-      <a href="#">INSURANCE</a>
-      <a href="#">RESOURCES</a>
-      <a href="#">LEARN</a>
-    </nav>
+      <nav>
+        <a href="#">INSURANCE</a>
+        <a href="#">RESOURCES</a>
+        <a href="#">LEARN</a>
+      </nav>
 
-    <div class="header-right">
-      <span class="phone">1-234-567-890</span>
-      <div class="login-container">
-        <button class="login-btn" onclick="toggleLoginOptions(event)">Log In</button>
-        <div class="login-dropdown">
-          <a href="login2.html" class="login-option admin">ZC Login</a>
-          <a href="login.html" class="login-option member">Admin Login</a>
+      <div class="header-right">
+        <span class="phone">1-234-567-890</span>
+        <div class="login-container">
+          <button class="login-btn" onclick="toggleLoginOptions(event)">
+            Log In
+          </button>
+          <div class="login-dropdown">
+            <a href="login2.html" class="login-option admin">ZC Login</a>
+            <a href="login.html" class="login-option member">Admin Login</a>
+          </div>
         </div>
       </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-text">
+        <h2>Life is unpredictable.</h2>
+        <p>Protect yourself with the right coverage.</p>
+        <a href="#" class="learn-btn">LEARN MORE ></a>
+      </div>
+      <div class="hero-image">
+        <img src="/img/handcontent.png" alt="Hero Image" />
+      </div>
+    </section>
+
+    <div class="chatbot-container" onclick="toggleChatbox()">
+      <div class="chatbot-bubble">Talk with Cova</div>
+      <img src="/img/cova.png" alt="Chatbot Icon" class="chatbot-icon" />
     </div>
-  </header>
 
-  <section class="hero">
-    <div class="hero-text">
-      <h2>Life is unpredictable.</h2>
-      <p>Protect yourself with the right coverage.</p>
-      <a href="#" class="learn-btn">LEARN MORE ></a>
+    <div class="chatbox">
+      <img src="/img/cova.png" alt="Chatbot Avatar" />
+      <h2>Meet Cova!</h2>
+      <h3>Your AI Assistant</h3>
+      <p>
+        All your questions will be answered by an AI assistant. Ask here,
+        please!
+      </p>
+      <div class="input-container">
+        <input type="text" placeholder="Type your message..." />
+        <img src="/img/microphone.png" alt="Mic" />
+        <img src="/img/send.png" alt="Send" />
+      </div>
     </div>
-    <div class="hero-image">
-      <img src="handcontent.png" alt="Hero Image">
-    </div>
-  </section>
 
-  <div class="chatbot-container" onclick="toggleChatbox()">
-    <div class="chatbot-bubble">Talk with Cova</div>
-    <img src="cova.png" alt="Chatbot Icon" class="chatbot-icon">
-  </div>
+    <script>
+      function toggleChatbox() {
+        const box = document.querySelector(".chatbox");
+        box.style.display = box.style.display === "flex" ? "none" : "flex";
+      }
 
-  <div class="chatbox">
-    <img src="cova.png" alt="Chatbot Avatar">
-    <h2>Meet Cova!</h2>
-    <h3>Your AI Assistant</h3>
-    <p>All your questions will be answered by an AI assistant. Ask here, please!</p>
-    <div class="input-container">
-      <input type="text" placeholder="Type your message...">
-      <img src="microphone.png" alt="Mic">
-      <img src="send.png" alt="Send">
-    </div>
-  </div>
+      function toggleLoginOptions(event) {
+        event.preventDefault();
+        const dropdown = document.querySelector(".login-dropdown");
+        dropdown.classList.toggle("show");
 
-  <script>
-    function toggleChatbox() {
-      const box = document.querySelector('.chatbox');
-      box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
-    }
+        document.addEventListener("click", function closeDropdown(e) {
+          if (!e.target.closest(".login-container")) {
+            dropdown.classList.remove("show");
+            document.removeEventListener("click", closeDropdown);
+          }
+        });
+      }
 
-    function toggleLoginOptions(event) {
-      event.preventDefault();
-      const dropdown = document.querySelector('.login-dropdown');
-      dropdown.classList.toggle('show');
-      
-      document.addEventListener('click', function closeDropdown(e) {
-        if (!e.target.closest('.login-container')) {
-          dropdown.classList.remove('show');
-          document.removeEventListener('click', closeDropdown);
+      // Close dropdown on scroll
+      window.addEventListener("scroll", function () {
+        const dropdown = document.querySelector(".login-dropdown.show");
+        if (dropdown) {
+          dropdown.classList.remove("show");
         }
       });
-    }
-
-    // Close dropdown on scroll
-    window.addEventListener('scroll', function() {
-      const dropdown = document.querySelector('.login-dropdown.show');
-      if (dropdown) {
-        dropdown.classList.remove('show');
-      }
-    });
-  </script>
-
-</body>
+    </script>
+  </body>
 </html>

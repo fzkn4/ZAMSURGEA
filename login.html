@@ -1,59 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Log In - Zamsurgea Community</title>
-    <link rel="icon" type="image/png" href="tab-logo.png">
-    <link rel="stylesheet" href="login.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-</head>
-<body>
+    <link rel="icon" type="image/png" href="/img/tab-logo.png" />
+    <link rel="stylesheet" href="/styles/login.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+  </head>
+  <body>
     <div class="container">
-        <!-- Left Section (Background Image & Text) -->
-        <div class="left-section">
-            <div class="overlay-content">
-                <h2>Zamsurgea Community <br> Multi-Purpose Cooperative</h2>
-                <div class="insurance">
-                    <img src="check-mark.png" alt="Checkmark">
-                    <span>GET <strong>INSURED</strong></span>
-                </div>
+      <!-- Left Section (Background Image & Text) -->
+      <div class="left-section">
+        <div class="overlay-content">
+          <h2>
+            Zamsurgea Community <br />
+            Multi-Purpose Cooperative
+          </h2>
+          <div class="insurance">
+            <img src="/img/check-mark.png" alt="Checkmark" />
+            <span>GET <strong>INSURED</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Section (Login Form) -->
+      <div class="right-section">
+        <img src="/img/logo.jpg" alt="Logo" class="logo" />
+        <form>
+          <div class="input-group">
+            <label for="userid">User ID</label>
+            <input type="text" id="userid" placeholder="Enter User ID" />
+          </div>
+
+          <div class="input-group">
+            <label for="password">Password</label>
+            <div class="password-container">
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter Password"
+                required
+              />
             </div>
-        </div>
+          </div>
 
-        <!-- Right Section (Login Form) -->
-        <div class="right-section">
-            <img src="logo.jpg" alt="Logo" class="logo">
-            <form>
-                <div class="input-group">
-                    <label for="userid">User ID</label>
-                    <input type="text" id="userid" placeholder="Enter User ID">
-                </div>
-
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <div class="password-container">
-                        <input type="password" id="password" placeholder="Enter Password" required>
-                    </div>
-                </div>
-
-                <button type="button" class="login-btn" onclick="window.location.href='dashboard.html'">Log In</button>
-                <button type="button" class="signup-btn" onclick="window.location.href='signup.html'">Sign Up</button>
-            </form>
-        </div>
+          <button
+            type="button"
+            class="login-btn"
+            onclick="window.location.href='dashboard.html'"
+          >
+            Log In
+          </button>
+          <button
+            type="button"
+            class="signup-btn"
+            onclick="window.location.href='signup.html'"
+          >
+            Sign Up
+          </button>
+        </form>
+      </div>
     </div>
 
     <script>
-        // Password Toggle Functionality
-        const passwordInput = document.getElementById("password");
-        const toggleIcon = document.getElementById("toggleIcon");
+      // Password Toggle Functionality
+      const passwordInput = document.getElementById("password");
+      const toggleIcon = document.getElementById("toggleIcon");
 
-        togglePassword.addEventListener('click', function () {
-      // Toggle password visibility
-      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-      password.setAttribute('type', type);
-  });
+      togglePassword.addEventListener("click", function () {
+        // Toggle password visibility
+        const type =
+          password.getAttribute("type") === "password" ? "text" : "password";
+        password.setAttribute("type", type);
+      });
     </script>
-
-</body>
+  </body>
 </html>
