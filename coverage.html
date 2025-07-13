@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coverage Information - Zamsurgea Community</title>
+  <link rel="icon" type="image/png" href="tab-logo.png">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #2f619e 50%, #f44336 50%);
+    }
+
+    .outer-box {
+        background-color: rgba(255, 255, 255, 0.8); /* Transparent outside */
+      border-radius: 30px;
+      padding: 20px;
+      margin: 20px;
+      width: 100%;
+      max-width: 800px;
+      max-height: 500px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .container {
+      background: white; /* Solid white box */
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .steps {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      background: white;
+      padding: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+
+    .step {
+      background: #eee;
+      padding: 10px 15px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      flex: 1 1 auto;
+      min-width: 200px;
+    }
+
+    .step.active {
+      background: #00aaff;
+      color: #fff;
+    }
+
+    .step .circle {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      font-size: 14px;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .step.active .circle {
+      background: #fff;
+      color: #00aaff;
+    }
+
+    .scrollable-content {
+      overflow-y: auto;
+      padding: 20px;
+      flex: 1;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+      width: 98%;
+    }
+
+    .footer {
+      background: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+    }
+
+    .btn {
+      background-color: #005fa3;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #004c82;
+    }
+
+    .scrollable-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .scrollable-content::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 4px;
+    }
+
+    .scrollable-content::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+    }
+
+    .scrollable-content {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="outer-box">
+    <div class="container">
+      <div class="steps">
+        <div class="step">
+          <div class="circle">1</div>
+          Your Profile
+        </div>
+        <div class="step">
+          <div class="circle">2</div>
+          Set-Up Account
+        </div>
+        <div class="step active">
+          <div class="circle">3</div>
+          Coverage Information
+        </div>
+      </div>
+
+      <div class="scrollable-content">
+        <div class="form-group">
+          <label>Insurance Product</label>
+          <select>
+            <option>Select Product</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Amount of Deposit</label>
+          <input type="number" placeholder="Enter amount" />
+        </div>
+
+        <div class="form-group">
+          <label>Option No.</label>
+          <select>
+            <option>Select Option</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Effectivity</label>
+          <input type="date" />
+        </div>
+
+        <div class="form-group">
+          <label>Valid until</label>
+          <input type="date" />
+        </div>
+
+        <div class="form-group">
+          <label>Who referred you?</label>
+          <input type="text" placeholder="Enter name" />
+        </div>
+      </div>
+
+      <div class="footer">
+        <button class="btn" onclick="window.location.href='setup.html'">&#8592; Back to Set-Up Account</button>
+        <button class="btn" onclick="window.location.href='login2.html'">Finish &#8594;</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
