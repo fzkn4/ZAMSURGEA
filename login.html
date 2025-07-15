@@ -32,12 +32,10 @@
         <img src="/img/logo.jpg" alt="Logo" class="logo" />
         <form>
           <div class="input-group">
-            <label for="userid">User ID</label>
             <input type="text" id="userid" placeholder="Enter User ID" />
           </div>
 
           <div class="input-group">
-            <label for="password">Password</label>
             <div class="password-container">
               <input
                 type="password"
@@ -48,13 +46,7 @@
             </div>
           </div>
 
-          <button
-            type="button"
-            class="login-btn"
-            onclick="window.location.href='dashboard.html'"
-          >
-            Log In
-          </button>
+          <button type="button" class="login-btn">Log In</button>
           <button
             type="button"
             class="signup-btn"
@@ -66,17 +58,9 @@
       </div>
     </div>
 
-    <script>
-      // Password Toggle Functionality
-      const passwordInput = document.getElementById("password");
-      const toggleIcon = document.getElementById("toggleIcon");
-
-      togglePassword.addEventListener("click", function () {
-        // Toggle password visibility
-        const type =
-          password.getAttribute("type") === "password" ? "text" : "password";
-        password.setAttribute("type", type);
-      });
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/scripts/firebase.js"></script>
+    <script src="/scripts/login.js"></script>
   </body>
 </html>

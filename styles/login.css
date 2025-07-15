@@ -84,7 +84,39 @@ form {
 }
 
 .input-group {
-  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  background: #f7f9fa;
+  border: 1.5px solid #ccc;
+  border-radius: 18px;
+  margin-bottom: 18px;
+  padding: 12px 0px 12px 16px; /* Remove right padding */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.input-group:focus-within {
+  border-color: #0056b3;
+  box-shadow: 0 4px 16px rgba(0, 86, 179, 0.08);
+}
+
+.input-group .icon {
+  margin-right: 12px;
+  font-size: 18px;
+  color: #0056b3;
+}
+
+.input-group input,
+input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 17px;
+  background: transparent;
+  padding: 6px 0;
+  color: #222;
+  transition: color 0.2s;
+  border-radius: 0;
 }
 
 label {
@@ -93,25 +125,25 @@ label {
   display: block;
 }
 
-input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 16px;
-}
-
 /* Password field with eye icon */
 .password-container {
   position: relative;
 }
 
+.password-container input {
+  width: 100%;
+  padding-right: 40px; /* More space for the icon */
+}
+
 .toggle-password {
   position: absolute;
-  right: 12px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
+  color: #888;
+  font-size: 18px;
+  z-index: 2;
 }
 
 /* Buttons */

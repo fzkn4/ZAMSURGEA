@@ -71,39 +71,64 @@
             </span>
           </div>
 
-          <button
-            type="button"
-            class="signup-btn"
-            onclick="window.location.href='login.html'"
-          >
-            Sign Up
-          </button>
+          <button type="button" class="signup-btn">Sign Up</button>
           <button type="button" class="cancel-btn">Cancel</button>
         </form>
       </div>
     </div>
 
-    <script>
-      function togglePasswordVisibility(inputId, iconId) {
-        const passwordField = document.getElementById(inputId);
-        const toggleIcon = document.getElementById(iconId);
+    <!-- Modal Popup for Signup Result -->
+    <div
+      id="signup-modal"
+      style="
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.4);
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <div
+        style="
+          background: white;
+          padding: 32px 24px;
+          border-radius: 16px;
+          max-width: 90vw;
+          min-width: 260px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+          text-align: center;
+          position: relative;
+        "
+      >
+        <span
+          id="signup-modal-message"
+          style="font-size: 18px; display: block; margin-bottom: 18px"
+        ></span>
+        <button
+          id="signup-modal-close"
+          style="
+            padding: 8px 24px;
+            border: none;
+            border-radius: 8px;
+            background: #0056b3;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+          "
+        >
+          Close
+        </button>
+      </div>
+    </div>
 
-        toggleIcon.addEventListener("click", function () {
-          if (passwordField.type === "password") {
-            passwordField.type = "text";
-            toggleIcon.classList.remove("fa-eye");
-            toggleIcon.classList.add("fa-eye-slash");
-          } else {
-            passwordField.type = "password";
-            toggleIcon.classList.remove("fa-eye-slash");
-            toggleIcon.classList.add("fa-eye");
-          }
-        });
-      }
-
-      // Apply the function to both password fields
-      togglePasswordVisibility("password", "togglePassword");
-      togglePasswordVisibility("confirmPassword", "toggleConfirmPassword");
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/scripts/firebase.js"></script>
+    <script src="/scripts/signup.js"></script>
   </body>
 </html>

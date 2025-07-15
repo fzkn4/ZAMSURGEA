@@ -118,14 +118,28 @@
               </div>
             </div>
             <div class="chart-section">
-              <h3>Upcoming Due</h3>
-              <canvas id="upcomingDueChart"></canvas>
-              <h3>Overdue</h3>
-              <canvas id="overdueChart"></canvas>
-              <h3>Inactive</h3>
-              <canvas id="inactiveChart"></canvas>
-              <h3>Renewal</h3>
-              <canvas id="renewalChart"></canvas>
+              <div class="charts-grid">
+                <div class="chart-block">
+                  <h3>Upcoming Due</h3>
+                  <canvas
+                    id="upcomingDueChart"
+                    width="500"
+                    height="320"
+                  ></canvas>
+                </div>
+                <div class="chart-block">
+                  <h3>Overdue</h3>
+                  <canvas id="overdueChart" width="500" height="320"></canvas>
+                </div>
+                <div class="chart-block">
+                  <h3>Inactive</h3>
+                  <canvas id="inactiveChart" width="500" height="320"></canvas>
+                </div>
+                <div class="chart-block">
+                  <h3>Renewal</h3>
+                  <canvas id="renewalChart" width="500" height="320"></canvas>
+                </div>
+              </div>
             </div>
             <div class="results-section">
               <div class="results-header">
@@ -229,30 +243,40 @@
 
         <!-- MICROINSURANCE PRODUCTS SECTION -->
         <!-- GADDI SECTION -->
-        <section id="gaddi-section" class="content-section">
+        <section id="gaddi-section" class="content-section active">
           <div class="gaddi-container" style="position: relative">
             <h2 class="title">
-              Group Accidental Death & Disablement Insurance (GADDI)
+              Group Accidental Death &amp; Disablement Insurance (GADDI)
             </h2>
 
             <!-- Section Headers -->
             <div class="section-headers" style="position: relative">
-              <!-- Upcoming Due -->
               <div
-                class="section-header header-upcoming"
-                onclick="toggleDropdown('upcoming', this)"
+                class="gaddi-status-filter-bar"
+                style="
+                  width: 100%;
+                  background: transparent;
+                  padding: 16px 0 12px 0;
+                  box-sizing: border-box;
+                "
               >
-                Upcoming Due <span class="arrow">❯</span>
-                <ul id="dropdown-upcoming" class="dropdown-list"></ul>
-              </div>
-
-              <!-- Overdue -->
-              <div
-                class="section-header header-overdue"
-                onclick="toggleDropdown('overdue', this)"
-              >
-                Overdue <span class="arrow">❯</span>
-                <ul id="dropdown-overdue" class="dropdown-list"></ul>
+                <select
+                  id="dropdownStatusFilter"
+                  style="
+                    width: 100%;
+                    padding: 10px 16px;
+                    border-radius: 8px;
+                    font-size: 1rem;
+                    border: 1.5px solid #e0e7ef;
+                    outline: none;
+                    background: #fff;
+                  "
+                >
+                  <option value="all">All</option>
+                  <option value="overdue">Overdue</option>
+                  <option value="upcoming due">Upcoming due</option>
+                  <option value="renewed">Renewed</option>
+                </select>
               </div>
             </div>
 
@@ -284,7 +308,7 @@
                     <td>GADDI</td>
                     <td>Option 2</td>
                     <td>699</td>
-                    <td class="status upcoming">Upcoming due</td>
+                    <td class="status upcomingdue">Upcoming due</td>
                   </tr>
                   <tr>
                     <td>10113</td>
@@ -308,7 +332,7 @@
                     <td>GADDI</td>
                     <td>Option 2</td>
                     <td>699</td>
-                    <td class="status upcoming">Upcoming due</td>
+                    <td class="status upcomingdue">Upcoming due</td>
                   </tr>
                   <tr>
                     <td>10113</td>
@@ -340,7 +364,7 @@
                     <td>GADDI</td>
                     <td>Option 2</td>
                     <td>699</td>
-                    <td class="status upcoming">Upcoming due</td>
+                    <td class="status upcomingdue">Upcoming due</td>
                   </tr>
                   <tr>
                     <td>10113</td>
@@ -355,9 +379,15 @@
             </div>
 
             <div class="gaddiaction-buttons">
-              <button class="gaddiadd">Add</button>
-              <button class="gaddiupdate">Update</button>
-              <button class="gaddiprint">Print</button>
+              <button class="gaddiadd" onclick="openModal('add', this)">
+                Add
+              </button>
+              <button class="gaddiupdate" onclick="openModal('update', this)">
+                Update
+              </button>
+              <button class="gaddiprint" onclick="openModal('print', this)">
+                Print
+              </button>
             </div>
           </div>
         </section>
@@ -366,27 +396,37 @@
         <section id="gaddi-plus-section" class="content-section">
           <div class="gaddi-container" style="position: relative">
             <h2 class="title">
-              Group Accidental Death & Disablement Insurance (GADDI)
+              Group Accidental Death & Disablement Insurance (GADDI Plus)
             </h2>
 
             <!-- Section Headers -->
             <div class="section-headers" style="position: relative">
-              <!-- Upcoming Due -->
               <div
-                class="section-header header-upcoming"
-                onclick="toggleDropdown('upcoming', this)"
+                class="gaddi-status-filter-bar"
+                style="
+                  width: 100%;
+                  background: transparent;
+                  padding: 16px 0 12px 0;
+                  box-sizing: border-box;
+                "
               >
-                Upcoming Due <span class="arrow">❯</span>
-                <ul id="dropdown-upcoming" class="dropdown-list"></ul>
-              </div>
-
-              <!-- Overdue -->
-              <div
-                class="section-header header-overdue"
-                onclick="toggleDropdown('overdue', this)"
-              >
-                Overdue <span class="arrow">❯</span>
-                <ul id="dropdown-overdue" class="dropdown-list"></ul>
+                <select
+                  id="dropdownStatusFilterPlus"
+                  style="
+                    width: 100%;
+                    padding: 10px 16px;
+                    border-radius: 8px;
+                    font-size: 1rem;
+                    border: 1.5px solid #e0e7ef;
+                    outline: none;
+                    background: #fff;
+                  "
+                >
+                  <option value="all">All</option>
+                  <option value="overdue">Overdue</option>
+                  <option value="upcoming due">Upcoming due</option>
+                  <option value="renewed">Renewed</option>
+                </select>
               </div>
             </div>
 
@@ -403,85 +443,85 @@
                     <th>Status</th>
                   </tr>
                 </thead>
-                <tbody id="gaddiTableBody">
+                <tbody id="gaddiPlusTableBody">
                   <tr>
-                    <td>10111</td>
-                    <td>Test User 01</td>
-                    <td>GADDI</td>
+                    <td>20111</td>
+                    <td>Test User 11</td>
+                    <td>GADDI PLUS</td>
                     <td>Option 1</td>
-                    <td>399</td>
+                    <td>250</td>
                     <td class="status overdue">Overdue</td>
                   </tr>
                   <tr>
-                    <td>10112</td>
-                    <td>Test User 02</td>
-                    <td>GADDI</td>
+                    <td>20112</td>
+                    <td>Test User 12</td>
+                    <td>GADDI PLUS</td>
                     <td>Option 2</td>
-                    <td>699</td>
-                    <td class="status upcoming">Upcoming due</td>
+                    <td>500</td>
+                    <td class="status upcomingdue">Upcoming due</td>
                   </tr>
                   <tr>
-                    <td>10113</td>
-                    <td>Test User 03</td>
-                    <td>GADDI</td>
-                    <td>Option 1</td>
-                    <td>399</td>
+                    <td>20113</td>
+                    <td>Test User 13</td>
+                    <td>GADDI PLUS</td>
+                    <td>Option 3</td>
+                    <td>800</td>
                     <td class="status renewed">Renewed</td>
                   </tr>
                   <tr>
-                    <td>10111</td>
-                    <td>Test User 04</td>
-                    <td>GADDI</td>
-                    <td>Option 1</td>
-                    <td>399</td>
+                    <td>20114</td>
+                    <td>Test User 14</td>
+                    <td>GADDI PLUS</td>
+                    <td>Option 4</td>
+                    <td>1000</td>
                     <td class="status overdue">Overdue</td>
                   </tr>
                   <tr>
-                    <td>10112</td>
-                    <td>Test User 05</td>
-                    <td>GADDI</td>
+                    <td>20115</td>
+                    <td>Test User 15</td>
+                    <td>GADDI PLUS</td>
+                    <td>Option 1</td>
+                    <td>250</td>
+                    <td class="status upcomingdue">Upcoming due</td>
+                  </tr>
+                  <tr>
+                    <td>20116</td>
+                    <td>Test User 16</td>
+                    <td>GADDI PLUS</td>
                     <td>Option 2</td>
-                    <td>699</td>
-                    <td class="status upcoming">Upcoming due</td>
-                  </tr>
-                  <tr>
-                    <td>10113</td>
-                    <td>Test User 06</td>
-                    <td>GADDI</td>
-                    <td>Option 1</td>
-                    <td>399</td>
+                    <td>500</td>
                     <td class="status renewed">Renewed</td>
                   </tr>
                   <tr>
-                    <td>10113</td>
-                    <td>Test User 07</td>
-                    <td>GADDI</td>
-                    <td>Option 1</td>
-                    <td>399</td>
+                    <td>20117</td>
+                    <td>Test User 17</td>
+                    <td>GADDI PLUS</td>
+                    <td>Option 3</td>
+                    <td>800</td>
                     <td class="status renewed">Renewed</td>
                   </tr>
                   <tr>
-                    <td>10111</td>
-                    <td>Test User 08</td>
-                    <td>GADDI</td>
-                    <td>Option 1</td>
-                    <td>399</td>
+                    <td>20118</td>
+                    <td>Test User 18</td>
+                    <td>GADDI PLUS</td>
+                    <td>Option 4</td>
+                    <td>1000</td>
                     <td class="status overdue">Overdue</td>
                   </tr>
                   <tr>
-                    <td>10112</td>
-                    <td>Test User 09</td>
-                    <td>GADDI</td>
-                    <td>Option 2</td>
-                    <td>699</td>
-                    <td class="status upcoming">Upcoming due</td>
+                    <td>20119</td>
+                    <td>Test User 19</td>
+                    <td>GADDI PLUS</td>
+                    <td>Option 1</td>
+                    <td>250</td>
+                    <td class="status upcomingdue">Upcoming due</td>
                   </tr>
                   <tr>
-                    <td>10113</td>
-                    <td>Test User 10</td>
-                    <td>GADDI</td>
-                    <td>Option 1</td>
-                    <td>399</td>
+                    <td>20120</td>
+                    <td>Test User 20</td>
+                    <td>GADDI PLUS</td>
+                    <td>Option 2</td>
+                    <td>500</td>
                     <td class="status renewed">Renewed</td>
                   </tr>
                 </tbody>
@@ -489,9 +529,15 @@
             </div>
 
             <div class="gaddiaction-buttons">
-              <button class="gaddiadd">Add</button>
-              <button class="gaddiupdate">Update</button>
-              <button class="gaddiprint">Print</button>
+              <button class="gaddiadd" onclick="openModal('add', this)">
+                Add
+              </button>
+              <button class="gaddiupdate" onclick="openModal('update', this)">
+                Update
+              </button>
+              <button class="gaddiprint" onclick="openModal('print', this)">
+                Print
+              </button>
             </div>
           </div>
         </section>
@@ -499,28 +545,36 @@
         <!-- GLAFI SECTION -->
         <section id="glafi-section" class="content-section">
           <div class="gaddi-container" style="position: relative">
-            <h2 class="title">
-              Group Accidental Death & Disablement Insurance (GADDI)
-            </h2>
+            <h2 class="title">Group Life and Family Insurance (GLAFI)</h2>
 
             <!-- Section Headers -->
             <div class="section-headers" style="position: relative">
-              <!-- Upcoming Due -->
               <div
-                class="section-header header-upcoming"
-                onclick="toggleDropdown('upcoming', this)"
+                class="gaddi-status-filter-bar"
+                style="
+                  width: 100%;
+                  background: transparent;
+                  padding: 16px 0 12px 0;
+                  box-sizing: border-box;
+                "
               >
-                Upcoming Due <span class="arrow">❯</span>
-                <ul id="dropdown-upcoming" class="dropdown-list"></ul>
-              </div>
-
-              <!-- Overdue -->
-              <div
-                class="section-header header-overdue"
-                onclick="toggleDropdown('overdue', this)"
-              >
-                Overdue <span class="arrow">❯</span>
-                <ul id="dropdown-overdue" class="dropdown-list"></ul>
+                <select
+                  id="dropdownStatusFilterGlafi"
+                  style="
+                    width: 100%;
+                    padding: 10px 16px;
+                    border-radius: 8px;
+                    font-size: 1rem;
+                    border: 1.5px solid #e0e7ef;
+                    outline: none;
+                    background: #fff;
+                  "
+                >
+                  <option value="all">All</option>
+                  <option value="overdue">Overdue</option>
+                  <option value="upcoming due">Upcoming due</option>
+                  <option value="renewed">Renewed</option>
+                </select>
               </div>
             </div>
 
@@ -537,85 +591,85 @@
                     <th>Status</th>
                   </tr>
                 </thead>
-                <tbody id="gaddiTableBody">
+                <tbody id="glafiTableBody">
                   <tr>
-                    <td>10111</td>
-                    <td>Test User 01</td>
-                    <td>GADDI</td>
+                    <td>30111</td>
+                    <td>Test User 21</td>
+                    <td>GLAFI</td>
                     <td>Option 1</td>
-                    <td>399</td>
+                    <td>500</td>
                     <td class="status overdue">Overdue</td>
                   </tr>
                   <tr>
-                    <td>10112</td>
-                    <td>Test User 02</td>
-                    <td>GADDI</td>
-                    <td>Option 2</td>
-                    <td>699</td>
-                    <td class="status upcoming">Upcoming due</td>
+                    <td>30112</td>
+                    <td>Test User 22</td>
+                    <td>GLAFI</td>
+                    <td>Option 1</td>
+                    <td>500</td>
+                    <td class="status upcomingdue">Upcoming due</td>
                   </tr>
                   <tr>
-                    <td>10113</td>
-                    <td>Test User 03</td>
-                    <td>GADDI</td>
+                    <td>30113</td>
+                    <td>Test User 23</td>
+                    <td>GLAFI</td>
                     <td>Option 1</td>
-                    <td>399</td>
+                    <td>500</td>
                     <td class="status renewed">Renewed</td>
                   </tr>
                   <tr>
-                    <td>10111</td>
-                    <td>Test User 04</td>
-                    <td>GADDI</td>
+                    <td>30114</td>
+                    <td>Test User 24</td>
+                    <td>GLAFI</td>
                     <td>Option 1</td>
-                    <td>399</td>
+                    <td>500</td>
                     <td class="status overdue">Overdue</td>
                   </tr>
                   <tr>
-                    <td>10112</td>
-                    <td>Test User 05</td>
-                    <td>GADDI</td>
-                    <td>Option 2</td>
-                    <td>699</td>
-                    <td class="status upcoming">Upcoming due</td>
+                    <td>30115</td>
+                    <td>Test User 25</td>
+                    <td>GLAFI</td>
+                    <td>Option 1</td>
+                    <td>500</td>
+                    <td class="status upcomingdue">Upcoming due</td>
                   </tr>
                   <tr>
-                    <td>10113</td>
-                    <td>Test User 06</td>
-                    <td>GADDI</td>
+                    <td>30116</td>
+                    <td>Test User 26</td>
+                    <td>GLAFI</td>
                     <td>Option 1</td>
-                    <td>399</td>
+                    <td>500</td>
                     <td class="status renewed">Renewed</td>
                   </tr>
                   <tr>
-                    <td>10113</td>
-                    <td>Test User 07</td>
-                    <td>GADDI</td>
+                    <td>30117</td>
+                    <td>Test User 27</td>
+                    <td>GLAFI</td>
                     <td>Option 1</td>
-                    <td>399</td>
+                    <td>500</td>
                     <td class="status renewed">Renewed</td>
                   </tr>
                   <tr>
-                    <td>10111</td>
-                    <td>Test User 08</td>
-                    <td>GADDI</td>
+                    <td>30118</td>
+                    <td>Test User 28</td>
+                    <td>GLAFI</td>
                     <td>Option 1</td>
-                    <td>399</td>
+                    <td>500</td>
                     <td class="status overdue">Overdue</td>
                   </tr>
                   <tr>
-                    <td>10112</td>
-                    <td>Test User 09</td>
-                    <td>GADDI</td>
-                    <td>Option 2</td>
-                    <td>699</td>
-                    <td class="status upcoming">Upcoming due</td>
+                    <td>30119</td>
+                    <td>Test User 29</td>
+                    <td>GLAFI</td>
+                    <td>Option 1</td>
+                    <td>500</td>
+                    <td class="status upcomingdue">Upcoming due</td>
                   </tr>
                   <tr>
-                    <td>10113</td>
-                    <td>Test User 10</td>
-                    <td>GADDI</td>
+                    <td>30120</td>
+                    <td>Test User 30</td>
+                    <td>GLAFI</td>
                     <td>Option 1</td>
-                    <td>399</td>
+                    <td>500</td>
                     <td class="status renewed">Renewed</td>
                   </tr>
                 </tbody>
@@ -623,9 +677,15 @@
             </div>
 
             <div class="gaddiaction-buttons">
-              <button class="gaddiadd">Add</button>
-              <button class="gaddiupdate">Update</button>
-              <button class="gaddiprint">Print</button>
+              <button class="gaddiadd" onclick="openModal('add', this)">
+                Add
+              </button>
+              <button class="gaddiupdate" onclick="openModal('update', this)">
+                Update
+              </button>
+              <button class="gaddiprint" onclick="openModal('print', this)">
+                Print
+              </button>
             </div>
           </div>
         </section>
@@ -790,7 +850,7 @@
                 <h2>Revenue</h2>
                 <div class="gdash-amount">₱ 20,000</div>
                 <div class="chart-container">
-                  <canvas id="revenueChart"></canvas>
+                  <canvas id="revenueChart" width="600" height="320"></canvas>
                 </div>
               </div>
               <div class="gdash-panel">
@@ -806,7 +866,11 @@
                   </div>
                 </h2>
                 <div class="chart-container">
-                  <canvas id="transactionsChart"></canvas>
+                  <canvas
+                    id="transactionsChart"
+                    width="600"
+                    height="320"
+                  ></canvas>
                 </div>
               </div>
             </div>
@@ -1041,588 +1105,26 @@
       </main>
     </div>
 
+    <!-- Modal Pop-up Window -->
+    <div id="gaddiModal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <div id="modalTitle" class="modal-title"></div>
+        <div id="modalBody" class="modal-body">
+          <!-- Dynamic content will be injected here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Firebase SDKs (compat mode for v9.x) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <!-- Your Firebase config and initialization -->
+    <script src="scripts/firebase.js"></script>
+    <!-- Chart.js and dashboard logic -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-      // Toggle user dropdown
-      function toggleUserDropdown() {
-        document.getElementById("userDropdown").classList.toggle("show");
-      }
-
-      // Close dropdown when clicking outside
-      window.onclick = function (event) {
-        if (
-          !event.target.matches(".dropdown-icon") &&
-          !event.target.closest(".user-dropdown")
-        ) {
-          const dropdowns = document.getElementsByClassName("user-dropdown");
-          for (let i = 0; i < dropdowns.length; i++) {
-            const openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains("show")) {
-              openDropdown.classList.remove("show");
-            }
-          }
-        }
-      };
-
-      function logout() {
-        // Optionally clear session or local storage here
-        // sessionStorage.clear(); localStorage.clear();
-        window.location.href = "login.html";
-      }
-
-      function toggleSubmenu(id) {
-        document.getElementById(id).classList.toggle("active");
-      }
-
-      function showSection(sectionId) {
-        document
-          .querySelectorAll(".content-section")
-          .forEach((sec) => sec.classList.remove("active"));
-        document.getElementById(sectionId).classList.add("active");
-        document.querySelector(".content").scrollTop = 0;
-      }
-
-      function toggleDropdown(statusType, headerEl) {
-        const dd = document.getElementById("dropdown-" + statusType);
-        // close others
-        document.querySelectorAll(".dropdown-list").forEach((d) => {
-          if (d !== dd) d.style.display = "none";
-        });
-        document
-          .querySelectorAll(".section-header")
-          .forEach((h) => h.classList.remove("open"));
-
-        const open = dd.style.display === "block";
-        dd.style.display = open ? "none" : "block";
-        headerEl.classList.toggle("open", !open);
-
-        // populate list
-        dd.innerHTML = "";
-        document.querySelectorAll("#gaddiTableBody tr").forEach((row) => {
-          const name = row.querySelector("td:nth-child(2)").textContent;
-          const st = row
-            .querySelector(".status")
-            .textContent.toLowerCase()
-            .trim();
-          if (
-            (statusType === "upcoming" && st.includes("upcoming")) ||
-            (statusType === "overdue" && st.includes("overdue"))
-          ) {
-            const li = document.createElement("li");
-            li.textContent = name;
-            dd.appendChild(li);
-          }
-        });
-      }
-
-      // Sample transaction data with 10 entries
-      const transactionData = {
-        weekly: [
-          {
-            id: 1001,
-            lastName: "Dela Cruz",
-            firstName: "Juan",
-            product: "GADDI",
-            option: "Option 1",
-            payment: "₱399",
-            date: "2023-10-15",
-          },
-          {
-            id: 1002,
-            lastName: "Santos",
-            firstName: "Maria",
-            product: "GADDI Plus",
-            option: "Option 2",
-            payment: "₱699",
-            date: "2023-10-16",
-          },
-          {
-            id: 1003,
-            lastName: "Reyes",
-            firstName: "Pedro",
-            product: "GLAFI",
-            option: "Option 1",
-            payment: "₱599",
-            date: "2023-10-17",
-          },
-          {
-            id: 1004,
-            lastName: "Gonzales",
-            firstName: "Ana",
-            product: "GADDI",
-            option: "Option 1",
-            payment: "₱399",
-            date: "2023-10-18",
-          },
-          {
-            id: 1005,
-            lastName: "Lim",
-            firstName: "Michael",
-            product: "GADDI Plus",
-            option: "Option 3",
-            payment: "₱999",
-            date: "2023-10-19",
-          },
-          {
-            id: 1006,
-            lastName: "Tan",
-            firstName: "Robert",
-            product: "GLAFI",
-            option: "Option 2",
-            payment: "₱799",
-            date: "2023-10-20",
-          },
-          {
-            id: 1007,
-            lastName: "Chen",
-            firstName: "Lisa",
-            product: "GADDI Plus",
-            option: "Option 1",
-            payment: "₱699",
-            date: "2023-10-21",
-          },
-          {
-            id: 1008,
-            lastName: "Wong",
-            firstName: "James",
-            product: "GADDI",
-            option: "Option 2",
-            payment: "₱499",
-            date: "2023-10-22",
-          },
-          {
-            id: 1009,
-            lastName: "Torres",
-            firstName: "Angela",
-            product: "GLAFI",
-            option: "Option 3",
-            payment: "₱899",
-            date: "2023-10-23",
-          },
-          {
-            id: 1010,
-            lastName: "Rivera",
-            firstName: "Carlos",
-            product: "GADDI Plus",
-            option: "Option 2",
-            payment: "₱699",
-            date: "2023-10-24",
-          },
-        ],
-        monthly: [
-          {
-            id: 1001,
-            lastName: "Dela Cruz",
-            firstName: "Juan",
-            product: "GADDI",
-            option: "Option 1",
-            payment: "₱399",
-            date: "2023-10-01",
-          },
-          {
-            id: 1004,
-            lastName: "Gonzales",
-            firstName: "Ana",
-            product: "GADDI",
-            option: "Option 1",
-            payment: "₱399",
-            date: "2023-10-05",
-          },
-          {
-            id: 1005,
-            lastName: "Lim",
-            firstName: "Michael",
-            product: "GADDI Plus",
-            option: "Option 3",
-            payment: "₱999",
-            date: "2023-10-12",
-          },
-          {
-            id: 1002,
-            lastName: "Santos",
-            firstName: "Maria",
-            product: "GADDI Plus",
-            option: "Option 2",
-            payment: "₱699",
-            date: "2023-10-16",
-          },
-          {
-            id: 1003,
-            lastName: "Reyes",
-            firstName: "Pedro",
-            product: "GLAFI",
-            option: "Option 1",
-            payment: "₱599",
-            date: "2023-10-17",
-          },
-          {
-            id: 1006,
-            lastName: "Tan",
-            firstName: "Robert",
-            product: "GLAFI",
-            option: "Option 2",
-            payment: "₱799",
-            date: "2023-10-20",
-          },
-          {
-            id: 1007,
-            lastName: "Chen",
-            firstName: "Lisa",
-            product: "GADDI Plus",
-            option: "Option 1",
-            payment: "₱699",
-            date: "2023-10-21",
-          },
-          {
-            id: 1008,
-            lastName: "Wong",
-            firstName: "James",
-            product: "GADDI",
-            option: "Option 2",
-            payment: "₱499",
-            date: "2023-10-22",
-          },
-          {
-            id: 1009,
-            lastName: "Torres",
-            firstName: "Angela",
-            product: "GLAFI",
-            option: "Option 3",
-            payment: "₱899",
-            date: "2023-10-23",
-          },
-          {
-            id: 1010,
-            lastName: "Rivera",
-            firstName: "Carlos",
-            product: "GADDI Plus",
-            option: "Option 2",
-            payment: "₱699",
-            date: "2023-10-24",
-          },
-        ],
-        quarterly: [
-          {
-            id: 1001,
-            lastName: "Dela Cruz",
-            firstName: "Juan",
-            product: "GADDI",
-            option: "Option 1",
-            payment: "₱399",
-            date: "2023-08-15",
-          },
-          {
-            id: 1006,
-            lastName: "Tan",
-            firstName: "Robert",
-            product: "GLAFI",
-            option: "Option 2",
-            payment: "₱799",
-            date: "2023-09-02",
-          },
-          {
-            id: 1007,
-            lastName: "Chen",
-            firstName: "Lisa",
-            product: "GADDI Plus",
-            option: "Option 1",
-            payment: "₱699",
-            date: "2023-09-18",
-          },
-          {
-            id: 1003,
-            lastName: "Reyes",
-            firstName: "Pedro",
-            product: "GLAFI",
-            option: "Option 1",
-            payment: "₱599",
-            date: "2023-10-17",
-          },
-          {
-            id: 1008,
-            lastName: "Wong",
-            firstName: "James",
-            product: "GADDI",
-            option: "Option 2",
-            payment: "₱499",
-            date: "2023-10-20",
-          },
-          {
-            id: 1002,
-            lastName: "Santos",
-            firstName: "Maria",
-            product: "GADDI Plus",
-            option: "Option 2",
-            payment: "₱699",
-            date: "2023-10-16",
-          },
-          {
-            id: 1004,
-            lastName: "Gonzales",
-            firstName: "Ana",
-            product: "GADDI",
-            option: "Option 1",
-            payment: "₱399",
-            date: "2023-10-05",
-          },
-          {
-            id: 1005,
-            lastName: "Lim",
-            firstName: "Michael",
-            product: "GADDI Plus",
-            option: "Option 3",
-            payment: "₱999",
-            date: "2023-10-12",
-          },
-          {
-            id: 1009,
-            lastName: "Torres",
-            firstName: "Angela",
-            product: "GLAFI",
-            option: "Option 3",
-            payment: "₱899",
-            date: "2023-10-23",
-          },
-          {
-            id: 1010,
-            lastName: "Rivera",
-            firstName: "Carlos",
-            product: "GADDI Plus",
-            option: "Option 2",
-            payment: "₱699",
-            date: "2023-10-24",
-          },
-        ],
-      };
-
-      // Chart data for different periods
-      const chartData = {
-        weekly: {
-          labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          data: [5, 8, 6, 9, 12, 4, 2],
-        },
-        monthly: {
-          labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-          data: [15, 22, 18, 12],
-        },
-        quarterly: {
-          labels: ["Month 1", "Month 2", "Month 3"],
-          data: [45, 68, 52],
-        },
-      };
-
-      // Initialize charts
-      let transactionsChart;
-      let revenueChart;
-
-      function initializeCharts() {
-        const revenueCtx = document
-          .getElementById("revenueChart")
-          .getContext("2d");
-        revenueChart = new Chart(revenueCtx, {
-          type: "bar",
-          data: {
-            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-            datasets: [
-              {
-                label: "Revenue (₱)",
-                data: [12000, 19000, 15000, 20000, 18000, 22000],
-                backgroundColor: "rgba(54, 162, 235, 0.7)",
-                borderColor: "rgba(54, 162, 235, 1)",
-                borderWidth: 1,
-              },
-            ],
-          },
-          options: chartOptions("₱"),
-        });
-
-        const transactionsCtx = document
-          .getElementById("transactionsChart")
-          .getContext("2d");
-        transactionsChart = new Chart(transactionsCtx, {
-          type: "bar",
-          data: getChartData("weekly"),
-          options: chartOptions(""),
-        });
-      }
-
-      function chartOptions(prefix) {
-        return {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: function (value) {
-                  return prefix ? prefix + value.toLocaleString() : value;
-                },
-              },
-            },
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-        };
-      }
-
-      function getChartData(period) {
-        return {
-          labels: chartData[period].labels,
-          datasets: [
-            {
-              label: "Transactions",
-              data: chartData[period].data,
-              backgroundColor: "rgba(75, 192, 192, 0.7)",
-              borderColor: "rgba(75, 192, 192, 1)",
-              borderWidth: 1,
-            },
-          ],
-        };
-      }
-
-      function populateTable(period) {
-        const tableBody = document.querySelector(".gdash-table tbody");
-        tableBody.innerHTML = "";
-
-        transactionData[period].forEach((transaction) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-          <td>${transaction.id}</td>
-          <td>${transaction.lastName}</td>
-          <td>${transaction.firstName}</td>
-          <td>${transaction.product}</td>
-          <td>${transaction.option}</td>
-          <td>${transaction.payment}</td>
-          <td>${transaction.date}</td>
-        `;
-          tableBody.appendChild(row);
-        });
-      }
-
-      // Notification functionality
-      function deleteNotification(id) {
-        const notification = document.querySelector(
-          `.notification-item[data-id="${id}"]`
-        );
-        if (notification) {
-          notification.style.opacity = "0";
-          setTimeout(() => {
-            notification.remove();
-            updateNotificationCount();
-          }, 300);
-        }
-      }
-
-      function deleteSelectedNotifications() {
-        const checkboxes = document.querySelectorAll(
-          ".notification-checkbox:checked"
-        );
-        checkboxes.forEach((checkbox) => {
-          const notification = checkbox.closest(".notification-item");
-          if (notification) {
-            const id = notification.getAttribute("data-id");
-            deleteNotification(id);
-          }
-        });
-      }
-
-      function markAllAsRead() {
-        document
-          .querySelectorAll(".notification-checkbox")
-          .forEach((checkbox) => {
-            checkbox.checked = true;
-          });
-      }
-
-      function updateNotificationCount() {
-        const count = document.querySelectorAll(".notification-item").length;
-        document.querySelector(".badge").textContent = count;
-      }
-
-      // Initialize everything when DOM is loaded
-      document.addEventListener("DOMContentLoaded", function () {
-        initializeCharts();
-        populateTable("weekly");
-
-        const dropdownItems = document.querySelectorAll(
-          ".gdash-dropdown-content a"
-        );
-        const dropdownButton = document.querySelector(".gdash-dropdown-button");
-
-        dropdownItems.forEach((item) => {
-          item.addEventListener("click", function (e) {
-            e.preventDefault();
-            const period = this.getAttribute("data-period");
-
-            // Update dropdown button text
-            dropdownButton.textContent = this.textContent + " ▾";
-
-            // Update active state
-            dropdownItems.forEach((i) => i.classList.remove("active"));
-            this.classList.add("active");
-
-            // Update chart data
-            transactionsChart.data = getChartData(period);
-            transactionsChart.update();
-
-            // Update table data
-            populateTable(period);
-          });
-        });
-
-        // Set weekly as active by default
-        document
-          .querySelector('.gdash-dropdown-content a[data-period="weekly"]')
-          .classList.add("active");
-
-        // Event listeners for notifications
-        document
-          .getElementById("delete-selected")
-          .addEventListener("click", deleteSelectedNotifications);
-        document
-          .getElementById("mark-all-read")
-          .addEventListener("click", markAllAsRead);
-
-        // Hover effect for delete buttons
-        document.querySelectorAll(".notification-item").forEach((item) => {
-          item.addEventListener("mouseenter", function () {
-            this.querySelector(".notification-delete").style.opacity = "1";
-          });
-          item.addEventListener("mouseleave", function () {
-            this.querySelector(".notification-delete").style.opacity = "0";
-          });
-        });
-
-        // Initialize charts for home section
-        const months = ["Jan", "Feb", "Mar", "Apr", "May"];
-        const cfgs = [
-          {
-            id: "upcomingDueChart",
-            label: "Upcoming Due",
-            data: [8, 15, 10, 6, 14],
-          },
-          { id: "overdueChart", label: "Overdue", data: [6, 3, 7, 3, 3] },
-          { id: "inactiveChart", label: "Inactive", data: [5, 4, 6, 10, 3] },
-          { id: "renewalChart", label: "Renewal", data: [6, 3, 7, 5, 4] },
-        ];
-        cfgs.forEach((c) => {
-          const ctx = document.getElementById(c.id)?.getContext("2d");
-          if (!ctx) return;
-          new Chart(ctx, {
-            type: "line",
-            data: {
-              labels: months,
-              datasets: [
-                { label: c.label, data: c.data, fill: true, tension: 0.4 },
-              ],
-            },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } },
-          });
-        });
-      });
-    </script>
+    <script src="/scripts/dashboard.js"></script>
   </body>
 </html>
