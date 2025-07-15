@@ -778,7 +778,7 @@ body {
 }
 
 .results-table-wrapper {
-  max-height: 360px; /* Approx height for 6 rows (60px each) */
+  max-height: 1200px; /* Height for 20 rows (60px each) */
   overflow-y: auto;
   border-radius: 8px;
 }

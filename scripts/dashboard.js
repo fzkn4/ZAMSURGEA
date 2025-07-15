@@ -47,11 +47,85 @@ function toggleSubmenu(id) {
 }
 
 function showSection(sectionId) {
+  // Hide all content sections
   document
     .querySelectorAll(".content-section")
     .forEach((sec) => sec.classList.remove("active"));
   document.getElementById(sectionId).classList.add("active");
   document.querySelector(".content").scrollTop = 0;
+
+  // Remove 'active' from all sidebar menu items
+  document
+    .querySelectorAll(".sidebar-menu .menu-item")
+    .forEach((item) => item.classList.remove("active"));
+  // Remove 'active' from all submenu <p>
+  document
+    .querySelectorAll(".sidebar-menu .submenu p")
+    .forEach((item) => item.classList.remove("active"));
+
+  // Highlight the correct menu item or submenu item
+  if (sectionId === "home-section") {
+    document
+      .querySelector(
+        ".sidebar-menu .menu-item[onclick*=\"showSection('home-section')\"]"
+      )
+      .classList.add("active");
+  } else if (sectionId === "commission-section") {
+    document
+      .querySelector(
+        ".sidebar-menu .menu-item[onclick*=\"showSection('commission-section')\"]"
+      )
+      .classList.add("active");
+  } else if (sectionId === "collection-section") {
+    document
+      .querySelector(
+        ".sidebar-menu .menu-item[onclick*=\"showSection('collection-section')\"]"
+      )
+      .classList.add("active");
+  } else if (sectionId === "notification-section") {
+    document
+      .querySelector(
+        ".sidebar-menu .menu-item[onclick*=\"showSection('notification-section')\"]"
+      )
+      .classList.add("active");
+  } else if (sectionId === "profile-section") {
+    // No sidebar highlight for profile/settings
+  } else if (sectionId === "settings-section") {
+    // No sidebar highlight for profile/settings
+  } else if (sectionId === "gaddi-section") {
+    document
+      .querySelector(
+        ".sidebar-menu .submenu p[onclick*=\"showSection('gaddi-section')\"]"
+      )
+      .classList.add("active");
+    document
+      .querySelector(
+        ".sidebar-menu .menu-item[onclick*=\"toggleSubmenu('microInsurance')\"]"
+      )
+      .classList.add("active");
+  } else if (sectionId === "gaddi-plus-section") {
+    document
+      .querySelector(
+        ".sidebar-menu .submenu p[onclick*=\"showSection('gaddi-plus-section')\"]"
+      )
+      .classList.add("active");
+    document
+      .querySelector(
+        ".sidebar-menu .menu-item[onclick*=\"toggleSubmenu('microInsurance')\"]"
+      )
+      .classList.add("active");
+  } else if (sectionId === "glafi-section") {
+    document
+      .querySelector(
+        ".sidebar-menu .submenu p[onclick*=\"showSection('glafi-section')\"]"
+      )
+      .classList.add("active");
+    document
+      .querySelector(
+        ".sidebar-menu .menu-item[onclick*=\"toggleSubmenu('microInsurance')\"]"
+      )
+      .classList.add("active");
+  }
 }
 
 function toggleDropdown(statusType, headerEl, tableBodyId = "gaddiTableBody") {
@@ -1810,6 +1884,360 @@ function setupGlafiDropdownFilterListener() {
     });
 }
 
+// Fetch and display all data in home section results table
+function fetchAndDisplayAllData() {
+  const tbody = document.querySelector("#home-section .results-table tbody");
+  if (!tbody) return;
+
+  // Clear existing content
+  tbody.innerHTML =
+    '<tr><td colspan="5" style="text-align: center; padding: 20px; color: #666;">Loading data...</td></tr>';
+
+  // Fetch data from all three collections
+  Promise.all([
+    firebase.database().ref("gaddi").once("value"),
+    firebase.database().ref("gaddiPlus").once("value"),
+    firebase.database().ref("glafi").once("value"),
+  ])
+    .then(([gaddiSnapshot, gaddiPlusSnapshot, glafiSnapshot]) => {
+      let allData = [];
+
+      // Process GADDI data
+      gaddiSnapshot.forEach((child) => {
+        const data = child.val();
+        if (
+          data &&
+          data.id &&
+          data.name &&
+          data.product &&
+          data.option &&
+          data.amount &&
+          data.status
+        ) {
+          allData.push({
+            id: data.id,
+            name: data.name,
+            product: data.product,
+            option: data.option,
+            amount: data.amount,
+            status: data.status,
+            createdAt: data.createdAt,
+            source: "gaddi",
+          });
+        }
+      });
+
+      // Process GADDI Plus data
+      gaddiPlusSnapshot.forEach((child) => {
+        const data = child.val();
+        if (
+          data &&
+          data.id &&
+          data.name &&
+          data.product &&
+          data.option &&
+          data.amount &&
+          data.status
+        ) {
+          allData.push({
+            id: data.id,
+            name: data.name,
+            product: data.product,
+            option: data.option,
+            amount: data.amount,
+            status: data.status,
+            createdAt: data.createdAt,
+            source: "gaddiPlus",
+          });
+        }
+      });
+
+      // Process GLAFI data
+      glafiSnapshot.forEach((child) => {
+        const data = child.val();
+        if (
+          data &&
+          data.id &&
+          data.name &&
+          data.product &&
+          data.option &&
+          data.amount &&
+          data.status
+        ) {
+          allData.push({
+            id: data.id,
+            name: data.name,
+            product: data.product,
+            option: data.option,
+            amount: data.amount,
+            status: data.status,
+            createdAt: data.createdAt,
+            source: "glafi",
+          });
+        }
+      });
+
+      // Sort by ID
+      allData.sort((a, b) => parseInt(a.id, 10) - parseInt(b.id, 10));
+
+      // Update summary card counters
+      updateSummaryCardCounters(allData);
+
+      // Update home dashboard charts with full data
+      updateHomeDashboardCharts(allData);
+
+      // Display data in table
+      displayAllDataInTable(allData);
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+      tbody.innerHTML =
+        '<tr><td colspan="5" style="text-align: center; padding: 20px; color: #e53935;">Failed to load data</td></tr>';
+    });
+}
+
+// Display all data in the home section results table
+function displayAllDataInTable(data) {
+  const tbody = document.querySelector("#home-section .results-table tbody");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  if (data.length === 0) {
+    tbody.innerHTML =
+      '<tr><td colspan="5" style="text-align: center; padding: 20px; color: #666;">No data found</td></tr>';
+    return;
+  }
+
+  data.forEach((item) => {
+    let statusColor = "";
+    const statusLower = item.status.toLowerCase();
+    if (statusLower.includes("upcoming")) {
+      statusColor = "color:#ffb74d;";
+    } else if (statusLower.includes("overdue")) {
+      statusColor = "color:#ef5350;";
+    } else if (statusLower.includes("renew")) {
+      statusColor = "color:#66bb6a;";
+    }
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${item.name}</td>
+      <td>${item.product}</td>
+      <td>${item.option}</td>
+      <td>₱${item.amount}</td>
+      <td class="status ${item.status
+        .toLowerCase()
+        .replace(/\s/g, "")}" style="${statusColor}">${item.status}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// Filter data in home section based on dropdown selections
+function filterHomeSectionData() {
+  const monthFilter = document.getElementById("monthFilter");
+  const statusFilter = document.getElementById("statusFilter");
+
+  if (!monthFilter || !statusFilter) return;
+
+  const selectedMonth = monthFilter.value.toLowerCase();
+  const selectedStatus = statusFilter.value.toLowerCase();
+
+  // Fetch data and apply filter
+  Promise.all([
+    firebase.database().ref("gaddi").once("value"),
+    firebase.database().ref("gaddiPlus").once("value"),
+    firebase.database().ref("glafi").once("value"),
+  ])
+    .then(([gaddiSnapshot, gaddiPlusSnapshot, glafiSnapshot]) => {
+      let allData = [];
+
+      // Process GADDI data
+      gaddiSnapshot.forEach((child) => {
+        const data = child.val();
+        if (
+          data &&
+          data.id &&
+          data.name &&
+          data.product &&
+          data.option &&
+          data.amount &&
+          data.status
+        ) {
+          allData.push({
+            id: data.id,
+            name: data.name,
+            product: data.product,
+            option: data.option,
+            amount: data.amount,
+            status: data.status,
+            createdAt: data.createdAt,
+            source: "gaddi",
+          });
+        }
+      });
+
+      // Process GADDI Plus data
+      gaddiPlusSnapshot.forEach((child) => {
+        const data = child.val();
+        if (
+          data &&
+          data.id &&
+          data.name &&
+          data.product &&
+          data.option &&
+          data.amount &&
+          data.status
+        ) {
+          allData.push({
+            id: data.id,
+            name: data.name,
+            product: data.product,
+            option: data.option,
+            amount: data.amount,
+            status: data.status,
+            createdAt: data.createdAt,
+            source: "gaddiPlus",
+          });
+        }
+      });
+
+      // Process GLAFI data
+      glafiSnapshot.forEach((child) => {
+        const data = child.val();
+        if (
+          data &&
+          data.id &&
+          data.name &&
+          data.product &&
+          data.option &&
+          data.amount &&
+          data.status
+        ) {
+          allData.push({
+            id: data.id,
+            name: data.name,
+            product: data.product,
+            option: data.option,
+            amount: data.amount,
+            status: data.status,
+            createdAt: data.createdAt,
+            source: "glafi",
+          });
+        }
+      });
+
+      // Apply month filter
+      if (selectedMonth && selectedMonth !== "all") {
+        allData = allData.filter((item) => {
+          if (!item.createdAt) return false;
+
+          const createdDate = new Date(item.createdAt);
+          const monthName = createdDate
+            .toLocaleString("en-US", { month: "long" })
+            .toLowerCase();
+
+          return monthName === selectedMonth;
+        });
+      }
+
+      // Apply status filter
+      if (selectedStatus && selectedStatus !== "all") {
+        allData = allData.filter((item) => {
+          const itemStatus = item.status.toLowerCase();
+          if (selectedStatus === "overdue") {
+            return itemStatus.includes("overdue");
+          } else if (selectedStatus === "upcoming") {
+            return itemStatus.includes("upcoming");
+          } else if (selectedStatus === "renewed") {
+            return itemStatus.includes("renewed");
+          }
+          return true;
+        });
+      }
+
+      // Sort by ID
+      allData.sort((a, b) => parseInt(a.id, 10) - parseInt(b.id, 10));
+
+      // Update summary card counters with filtered data
+      updateSummaryCardCounters(allData);
+
+      // Display filtered data
+      displayAllDataInTable(allData);
+    })
+    .catch((error) => {
+      console.error("Error filtering data:", error);
+    });
+}
+
+// Update summary card counters based on data
+function updateSummaryCardCounters(allData) {
+  let upcomingDueCount = 0;
+  let overdueCount = 0;
+  let inactiveCount = 0;
+  let renewalCount = 0;
+
+  allData.forEach((item) => {
+    const status = item.status.toLowerCase();
+    if (status.includes("upcoming")) {
+      upcomingDueCount++;
+    } else if (status.includes("overdue")) {
+      overdueCount++;
+    } else if (status.includes("inactive")) {
+      inactiveCount++;
+    } else if (status.includes("renewed")) {
+      renewalCount++;
+    }
+  });
+
+  // Update the counter elements
+  const upcomingDueCard = document.querySelector(
+    "#home-section .summary-cards .card.upcoming-due .card-number"
+  );
+  const overdueCard = document.querySelector(
+    "#home-section .summary-cards .card.overdue .card-number"
+  );
+  const inactiveCard = document.querySelector(
+    "#home-section .summary-cards .card.inactive .card-number"
+  );
+  const renewalCard = document.querySelector(
+    "#home-section .summary-cards .card.renewal .card-number"
+  );
+
+  if (upcomingDueCard) upcomingDueCard.textContent = upcomingDueCount;
+  if (overdueCard) overdueCard.textContent = overdueCount;
+  if (inactiveCard) inactiveCard.textContent = inactiveCount;
+  if (renewalCard) renewalCard.textContent = renewalCount;
+}
+
+// Set up real-time listeners for home section updates
+function setupHomeSectionRealTimeListeners() {
+  // Listen to GADDI changes
+  firebase
+    .database()
+    .ref("gaddi")
+    .on("value", function () {
+      fetchAndDisplayAllData();
+    });
+
+  // Listen to GADDI Plus changes
+  firebase
+    .database()
+    .ref("gaddiPlus")
+    .on("value", function () {
+      fetchAndDisplayAllData();
+    });
+
+  // Listen to GLAFI changes
+  firebase
+    .database()
+    .ref("glafi")
+    .on("value", function () {
+      fetchAndDisplayAllData();
+    });
+}
+
 // Initialize everything when DOM is loaded
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -1826,6 +2254,21 @@ document.addEventListener("DOMContentLoaded", function () {
   filterStaticGaddiTable();
   filterStaticGaddiPlusTable();
   filterStaticGlafiTable();
+
+  // Fetch and display all data in home section
+  fetchAndDisplayAllData();
+
+  // Set up filter event listeners for home section
+  const monthFilter = document.getElementById("monthFilter");
+  const statusFilter = document.getElementById("statusFilter");
+
+  if (monthFilter) {
+    monthFilter.addEventListener("change", filterHomeSectionData);
+  }
+
+  if (statusFilter) {
+    statusFilter.addEventListener("change", filterHomeSectionData);
+  }
 
   const dropdownItems = document.querySelectorAll(".gdash-dropdown-content a");
   const dropdownButton = document.querySelector(".gdash-dropdown-button");
@@ -1874,55 +2317,224 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Initialize charts for home section
-  const months = ["Jan", "Feb", "Mar", "Apr", "May"];
-  const cfgs = [
-    {
-      id: "upcomingDueChart",
-      label: "Upcoming Due",
-      data: [8, 15, 10, 6, 14],
-      color: "#ffb74d", // Upcoming
-    },
-    {
-      id: "overdueChart",
-      label: "Overdue",
-      data: [6, 3, 7, 3, 3],
-      color: "#ef5350",
-    },
-    {
-      id: "inactiveChart",
-      label: "Inactive",
-      data: [5, 4, 6, 10, 3],
-      color: "#90a4ae",
-    },
-    {
-      id: "renewalChart",
-      label: "Renewal",
-      data: [6, 3, 7, 5, 4],
-      color: "#66bb6a",
-    },
+  // Set up real-time listeners for home section updates
+  setupHomeSectionRealTimeListeners();
+
+  // Home dashboard charts (line charts)
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
-  cfgs.forEach((c) => {
-    const ctx = document.getElementById(c.id)?.getContext("2d");
-    if (!ctx) return;
-    new Chart(ctx, {
+  window.upcomingDueChartInstance = new Chart(
+    document.getElementById("upcomingDueChart").getContext("2d"),
+    {
       type: "line",
       data: {
         labels: months,
         datasets: [
           {
-            label: c.label,
-            data: c.data,
+            label: "Upcoming Due",
+            data: Array(12).fill(0),
             fill: true,
             tension: 0.4,
-            backgroundColor: c.color + "33", // 20% opacity
-            borderColor: c.color,
-            pointBackgroundColor: c.color,
-            pointBorderColor: c.color,
+            backgroundColor: "#ffb74d33",
+            borderColor: "#ffb74d",
+            pointBackgroundColor: "#ffb74d",
+            pointBorderColor: "#ffb74d",
           },
         ],
       },
-      options: { responsive: true, scales: { y: { beginAtZero: true } } },
-    });
-  });
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                if (Number.isInteger(value)) return value;
+                return null;
+              },
+            },
+          },
+        },
+      },
+    }
+  );
+  window.overdueChartInstance = new Chart(
+    document.getElementById("overdueChart").getContext("2d"),
+    {
+      type: "line",
+      data: {
+        labels: months,
+        datasets: [
+          {
+            label: "Overdue",
+            data: Array(12).fill(0),
+            fill: true,
+            tension: 0.4,
+            backgroundColor: "#ef535033",
+            borderColor: "#ef5350",
+            pointBackgroundColor: "#ef5350",
+            pointBorderColor: "#ef5350",
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                if (Number.isInteger(value)) return value;
+                return null;
+              },
+            },
+          },
+        },
+      },
+    }
+  );
+  window.inactiveChartInstance = new Chart(
+    document.getElementById("inactiveChart").getContext("2d"),
+    {
+      type: "line",
+      data: {
+        labels: months,
+        datasets: [
+          {
+            label: "Inactive",
+            data: Array(12).fill(0),
+            fill: true,
+            tension: 0.4,
+            backgroundColor: "#90a4ae33",
+            borderColor: "#90a4ae",
+            pointBackgroundColor: "#90a4ae",
+            pointBorderColor: "#90a4ae",
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                if (Number.isInteger(value)) return value;
+                return null;
+              },
+            },
+          },
+        },
+      },
+    }
+  );
+  window.renewalChartInstance = new Chart(
+    document.getElementById("renewalChart").getContext("2d"),
+    {
+      type: "line",
+      data: {
+        labels: months,
+        datasets: [
+          {
+            label: "Renewal",
+            data: Array(12).fill(0),
+            fill: true,
+            tension: 0.4,
+            backgroundColor: "#66bb6a33",
+            borderColor: "#66bb6a",
+            pointBackgroundColor: "#66bb6a",
+            pointBorderColor: "#66bb6a",
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                if (Number.isInteger(value)) return value;
+                return null;
+              },
+            },
+          },
+        },
+      },
+    }
+  );
 });
+
+// Place the new function after updateSummaryCardCounters
+function updateHomeDashboardCharts(allData) {
+  // Prepare months
+  const monthsArr = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  // Initialize counts for each status
+  const statusCounts = {
+    upcoming: Array(12).fill(0),
+    overdue: Array(12).fill(0),
+    inactive: Array(12).fill(0),
+    renewed: Array(12).fill(0),
+  };
+  // Get current year
+  const currentYear = new Date().getFullYear();
+  // Aggregate counts
+  allData.forEach((item) => {
+    if (!item.createdAt) return;
+    const date = new Date(item.createdAt);
+    if (date.getFullYear() !== currentYear) return;
+    const monthIdx = date.getMonth();
+    const status = item.status.toLowerCase();
+    if (status.includes("upcoming")) statusCounts.upcoming[monthIdx]++;
+    else if (status.includes("overdue")) statusCounts.overdue[monthIdx]++;
+    else if (status.includes("inactive")) statusCounts.inactive[monthIdx]++;
+    else if (status.includes("renewed")) statusCounts.renewed[monthIdx]++;
+  });
+  // Update each chart
+  if (window.upcomingDueChartInstance) {
+    window.upcomingDueChartInstance.data.labels = monthsArr;
+    window.upcomingDueChartInstance.data.datasets[0].data =
+      statusCounts.upcoming;
+    window.upcomingDueChartInstance.update();
+  }
+  if (window.overdueChartInstance) {
+    window.overdueChartInstance.data.labels = monthsArr;
+    window.overdueChartInstance.data.datasets[0].data = statusCounts.overdue;
+    window.overdueChartInstance.update();
+  }
+  if (window.inactiveChartInstance) {
+    window.inactiveChartInstance.data.labels = monthsArr;
+    window.inactiveChartInstance.data.datasets[0].data = statusCounts.inactive;
+    window.inactiveChartInstance.update();
+  }
+  if (window.renewalChartInstance) {
+    window.renewalChartInstance.data.labels = monthsArr;
+    window.renewalChartInstance.data.datasets[0].data = statusCounts.renewed;
+    window.renewalChartInstance.update();
+  }
+}

@@ -102,19 +102,19 @@
             <div class="summary-cards">
               <div class="card upcoming-due">
                 <div class="card-label">Upcoming Due</div>
-                <div class="card-number">30</div>
+                <div class="card-number">Loading</div>
               </div>
               <div class="card overdue">
                 <div class="card-label">Overdue</div>
-                <div class="card-number">10</div>
+                <div class="card-number">Loading</div>
               </div>
               <div class="card inactive">
                 <div class="card-label">Inactive</div>
-                <div class="card-number">35</div>
+                <div class="card-number">Loading</div>
               </div>
               <div class="card renewal">
                 <div class="card-label">Renewal</div>
-                <div class="card-number">25</div>
+                <div class="card-number">Loading</div>
               </div>
             </div>
             <div class="chart-section">
@@ -145,13 +145,26 @@
               <div class="results-header">
                 <h3>Results</h3>
                 <div class="results-filters">
-                  <select>
-                    <option>Month</option>
-                    <option>January</option>
+                  <select id="monthFilter">
+                    <option value="all">All Months</option>
+                    <option value="january">January</option>
+                    <option value="february">February</option>
+                    <option value="march">March</option>
+                    <option value="april">April</option>
+                    <option value="may">May</option>
+                    <option value="june">June</option>
+                    <option value="july">July</option>
+                    <option value="august">August</option>
+                    <option value="september">September</option>
+                    <option value="october">October</option>
+                    <option value="november">November</option>
+                    <option value="december">December</option>
                   </select>
-                  <select>
-                    <option>Overdue</option>
-                    <option>Upcoming</option>
+                  <select id="statusFilter">
+                    <option value="all">All Status</option>
+                    <option value="overdue">Overdue</option>
+                    <option value="upcoming">Upcoming</option>
+                    <option value="renewed">Renewed</option>
                   </select>
                 </div>
               </div>
@@ -243,7 +256,7 @@
 
         <!-- MICROINSURANCE PRODUCTS SECTION -->
         <!-- GADDI SECTION -->
-        <section id="gaddi-section" class="content-section active">
+        <section id="gaddi-section" class="content-section">
           <div class="gaddi-container" style="position: relative">
             <h2 class="title">
               Group Accidental Death &amp; Disablement Insurance (GADDI)
