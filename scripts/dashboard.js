@@ -39,7 +39,7 @@ window.onclick = function (event) {
 function logout() {
   // Optionally clear session or local storage here
   // sessionStorage.clear(); localStorage.clear();
-  window.location.href = "login.html";
+  window.location.href = "login2.html";
 }
 
 function toggleSubmenu(id) {
@@ -464,7 +464,7 @@ let revenueChart;
 
 function initializeCharts() {
   const revenueCtx = document.getElementById("revenueChart").getContext("2d");
-  revenueChart = new Chart(revenueCtx, {
+  window.revenueChart = new Chart(revenueCtx, {
     type: "bar",
     data: {
       labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -484,7 +484,7 @@ function initializeCharts() {
   const transactionsCtx = document
     .getElementById("transactionsChart")
     .getContext("2d");
-  transactionsChart = new Chart(transactionsCtx, {
+  window.transactionsChart = new Chart(transactionsCtx, {
     type: "bar",
     data: getChartData("weekly"),
     options: chartOptions(""),
@@ -617,7 +617,8 @@ function openModal(type, btn) {
       title.textContent = `Add Entry - ${sectionTitle}`;
       body.innerHTML = `<form id='addForm'>
         <label>ID No.: <input type='text' name='id' id='gaddiIdInput' readonly></label>
-        <label>Name: <input type='text' name='name' required></label>
+        <label>First Name: <input type='text' name='firstName' id='gaddiFirstNameInput' required></label>
+        <label>Last Name: <input type='text' name='lastName' id='gaddiLastNameInput' required></label>
         <label>Product Name: <input type='text' name='product' value='GADDI' readonly></label>
         <label>Option #:
           <select name='option' id='gaddiOptionSelect'>
@@ -645,10 +646,6 @@ function openModal(type, btn) {
               if (!isNaN(val) && val > maxId) maxId = val;
             }
           });
-          // Debug logs (can be removed later)
-          console.log("GADDI all keys:", allKeys);
-          console.log("GADDI numeric keys:", foundKeys, "maxId:", maxId);
-          console.log("GADDI snapshot value:", snapshot.val());
           newId = maxId + 1;
         } catch (err) {
           newId = 100001;
@@ -673,7 +670,8 @@ function openModal(type, btn) {
             }
             const form = e.target;
             const id = form.id.value;
-            const name = form.name.value;
+            const firstName = form.firstName.value;
+            const lastName = form.lastName.value;
             const product = form.product.value;
             const option = form.option.value;
             const amount = form.amount.value;
@@ -685,7 +683,8 @@ function openModal(type, btn) {
                 .ref("gaddi/" + id)
                 .set({
                   id,
-                  name,
+                  firstName,
+                  lastName,
                   product,
                   option,
                   amount,
@@ -709,7 +708,8 @@ function openModal(type, btn) {
       title.textContent = `Add Entry - ${sectionTitle}`;
       body.innerHTML = `<form id='addForm'>
         <label>ID No.: <input type='text' name='id' id='gaddiPlusIdInput' readonly></label>
-        <label>Name: <input type='text' name='name' required></label>
+        <label>First Name: <input type='text' name='firstName' id='gaddiPlusFirstNameInput' required></label>
+        <label>Last Name: <input type='text' name='lastName' id='gaddiPlusLastNameInput' required></label>
         <label>Product Name: <input type='text' name='product' value='GADDI PLUS' readonly></label>
         <label>Option #:
           <select name='option' id='gaddiPlusOptionSelect'>
@@ -764,7 +764,8 @@ function openModal(type, btn) {
             }
             const form = e.target;
             const id = form.id.value;
-            const name = form.name.value;
+            const firstName = form.firstName.value;
+            const lastName = form.lastName.value;
             const product = form.product.value;
             const option = form.option.value;
             const amount = form.amount.value;
@@ -776,7 +777,8 @@ function openModal(type, btn) {
                 .ref("gaddiPlus/" + id)
                 .set({
                   id,
-                  name,
+                  firstName,
+                  lastName,
                   product,
                   option,
                   amount,
@@ -800,7 +802,8 @@ function openModal(type, btn) {
       title.textContent = `Add Entry - ${sectionTitle}`;
       body.innerHTML = `<form id='addForm'>
         <label>ID No.: <input type='text' name='id' id='glafiIdInput' readonly></label>
-        <label>Name: <input type='text' name='name' required></label>
+        <label>First Name: <input type='text' name='firstName' id='glafiFirstNameInput' required></label>
+        <label>Last Name: <input type='text' name='lastName' id='glafiLastNameInput' required></label>
         <label>Product Name: <input type='text' name='product' value='GLAFI' readonly></label>
         <label>Option #:
           <select name='option' id='glafiOptionSelect'>
@@ -846,7 +849,8 @@ function openModal(type, btn) {
             }
             const form = e.target;
             const id = form.id.value;
-            const name = form.name.value;
+            const firstName = form.firstName.value;
+            const lastName = form.lastName.value;
             const product = form.product.value;
             const option = form.option.value;
             const amount = form.amount.value;
@@ -858,7 +862,8 @@ function openModal(type, btn) {
                 .ref("glafi/" + id)
                 .set({
                   id,
-                  name,
+                  firstName,
+                  lastName,
                   product,
                   option,
                   amount,
@@ -899,7 +904,8 @@ function openModal(type, btn) {
         <label>Select ID No.:
           <select name='id' id='gaddiUpdateIdSelect' required><option value=''>Loading...</option></select>
         </label>
-        <label>Name: <input type='text' name='name' id='gaddiUpdateName' required></label>
+        <label>First Name: <input type='text' name='firstName' id='gaddiUpdateFirstName' required></label>
+        <label>Last Name: <input type='text' name='lastName' id='gaddiUpdateLastName' required></label>
         <label>Product Name: <input type='text' name='product' id='gaddiUpdateProduct' value='GADDI' readonly></label>
         <label>Option #:
           <select name='option' id='gaddiUpdateOption'>
@@ -932,14 +938,18 @@ function openModal(type, btn) {
         select.onchange = function () {
           const data = gaddiData[select.value];
           if (data) {
-            document.getElementById("gaddiUpdateName").value = data.name;
+            document.getElementById("gaddiUpdateFirstName").value =
+              data.firstName || "";
+            document.getElementById("gaddiUpdateLastName").value =
+              data.lastName || "";
             document.getElementById("gaddiUpdateProduct").value = data.product;
             document.getElementById("gaddiUpdateOption").value = data.option;
             document.getElementById("gaddiUpdateAmount").value =
               data.option === "Option 1" ? 230 : 460;
             document.getElementById("gaddiUpdateStatus").value = data.status;
           } else {
-            document.getElementById("gaddiUpdateName").value = "";
+            document.getElementById("gaddiUpdateFirstName").value = "";
+            document.getElementById("gaddiUpdateLastName").value = "";
             document.getElementById("gaddiUpdateProduct").value = "GADDI";
             document.getElementById("gaddiUpdateOption").value = "Option 1";
             document.getElementById("gaddiUpdateAmount").value = 230;
@@ -959,7 +969,10 @@ function openModal(type, btn) {
             showGaddiAddModal("Please select an ID to update.", false);
             return;
           }
-          const name = document.getElementById("gaddiUpdateName").value;
+          const firstName = document.getElementById(
+            "gaddiUpdateFirstName"
+          ).value;
+          const lastName = document.getElementById("gaddiUpdateLastName").value;
           const product = document.getElementById("gaddiUpdateProduct").value;
           const option = document.getElementById("gaddiUpdateOption").value;
           const amount = document.getElementById("gaddiUpdateAmount").value;
@@ -969,7 +982,8 @@ function openModal(type, btn) {
               .database()
               .ref("gaddi/" + id)
               .update({
-                name,
+                firstName,
+                lastName,
                 product,
                 option,
                 amount,
@@ -989,7 +1003,8 @@ function openModal(type, btn) {
         <label>Select ID No.:
           <select name='id' id='gaddiPlusUpdateIdSelect' required><option value=''>Loading...</option></select>
         </label>
-        <label>Name: <input type='text' name='name' id='gaddiPlusUpdateName' required></label>
+        <label>First Name: <input type='text' name='firstName' id='gaddiPlusUpdateFirstName' required></label>
+        <label>Last Name: <input type='text' name='lastName' id='gaddiPlusUpdateLastName' required></label>
         <label>Product Name: <input type='text' name='product' id='gaddiPlusUpdateProduct' value='GADDI PLUS' readonly></label>
         <label>Option #:
           <select name='option' id='gaddiPlusUpdateOption'>
@@ -1027,7 +1042,10 @@ function openModal(type, btn) {
         select.onchange = function () {
           const data = gaddiPlusData[select.value];
           if (data) {
-            document.getElementById("gaddiPlusUpdateName").value = data.name;
+            document.getElementById("gaddiPlusUpdateFirstName").value =
+              data.firstName || "";
+            document.getElementById("gaddiPlusUpdateLastName").value =
+              data.lastName || "";
             document.getElementById("gaddiPlusUpdateProduct").value =
               data.product;
             document.getElementById("gaddiPlusUpdateOption").value =
@@ -1040,7 +1058,8 @@ function openModal(type, btn) {
             document.getElementById("gaddiPlusUpdateStatus").value =
               data.status;
           } else {
-            document.getElementById("gaddiPlusUpdateName").value = "";
+            document.getElementById("gaddiPlusUpdateFirstName").value = "";
+            document.getElementById("gaddiPlusUpdateLastName").value = "";
             document.getElementById("gaddiPlusUpdateProduct").value =
               "GADDI PLUS";
             document.getElementById("gaddiPlusUpdateOption").value = "Option 1";
@@ -1066,7 +1085,12 @@ function openModal(type, btn) {
             showGaddiAddModal("Please select an ID to update.", false);
             return;
           }
-          const name = document.getElementById("gaddiPlusUpdateName").value;
+          const firstName = document.getElementById(
+            "gaddiPlusUpdateFirstName"
+          ).value;
+          const lastName = document.getElementById(
+            "gaddiPlusUpdateLastName"
+          ).value;
           const product = document.getElementById(
             "gaddiPlusUpdateProduct"
           ).value;
@@ -1078,7 +1102,8 @@ function openModal(type, btn) {
               .database()
               .ref("gaddiPlus/" + id)
               .update({
-                name,
+                firstName,
+                lastName,
                 product,
                 option,
                 amount,
@@ -1098,7 +1123,8 @@ function openModal(type, btn) {
         <label>Select ID No.:
           <select name='id' id='glafiUpdateIdSelect' required><option value=''>Loading...</option></select>
         </label>
-        <label>Name: <input type='text' name='name' id='glafiUpdateName' required></label>
+        <label>First Name: <input type='text' name='firstName' id='glafiUpdateFirstName' required></label>
+        <label>Last Name: <input type='text' name='lastName' id='glafiUpdateLastName' required></label>
         <label>Product Name: <input type='text' name='product' id='glafiUpdateProduct' value='GLAFI' readonly></label>
         <label>Option #:
           <select name='option' id='glafiUpdateOption'>
@@ -1130,14 +1156,18 @@ function openModal(type, btn) {
         select.onchange = function () {
           const data = glafiData[select.value];
           if (data) {
-            document.getElementById("glafiUpdateName").value = data.name;
+            document.getElementById("glafiUpdateFirstName").value =
+              data.firstName || "";
+            document.getElementById("glafiUpdateLastName").value =
+              data.lastName || "";
             document.getElementById("glafiUpdateProduct").value = data.product;
             document.getElementById("glafiUpdateOption").value = data.option;
             let amount = 500;
             document.getElementById("glafiUpdateAmount").value = amount;
             document.getElementById("glafiUpdateStatus").value = data.status;
           } else {
-            document.getElementById("glafiUpdateName").value = "";
+            document.getElementById("glafiUpdateFirstName").value = "";
+            document.getElementById("glafiUpdateLastName").value = "";
             document.getElementById("glafiUpdateProduct").value = "GLAFI";
             document.getElementById("glafiUpdateOption").value = "Option 1";
             document.getElementById("glafiUpdateAmount").value = 500;
@@ -1157,7 +1187,10 @@ function openModal(type, btn) {
             showGaddiAddModal("Please select an ID to update.", false);
             return;
           }
-          const name = document.getElementById("glafiUpdateName").value;
+          const firstName = document.getElementById(
+            "glafiUpdateFirstName"
+          ).value;
+          const lastName = document.getElementById("glafiUpdateLastName").value;
           const product = document.getElementById("glafiUpdateProduct").value;
           const option = document.getElementById("glafiUpdateOption").value;
           const amount = document.getElementById("glafiUpdateAmount").value;
@@ -1167,7 +1200,8 @@ function openModal(type, btn) {
               .database()
               .ref("glafi/" + id)
               .update({
-                name,
+                firstName,
+                lastName,
                 product,
                 option,
                 amount,
@@ -1285,19 +1319,23 @@ function listenToGaddiTableData() {
           if (
             data &&
             data.id &&
-            data.name &&
             data.product &&
             data.option &&
             data.amount &&
-            data.status
+            data.status &&
+            ((data.firstName && data.lastName) || data.name)
           ) {
             latestGaddiRows.push({
               id: data.id,
-              name: data.name,
+              firstName: data.firstName || "",
+              lastName: data.lastName || "",
+              name: data.name || "",
               product: data.product,
               option: data.option,
               amount: data.amount,
               status: data.status,
+              createdAt: data.createdAt,
+              source: "gaddi",
             });
           }
         });
@@ -1335,19 +1373,23 @@ function listenToGaddiPlusTableData() {
           if (
             data &&
             data.id &&
-            data.name &&
             data.product &&
             data.option &&
             data.amount &&
-            data.status
+            data.status &&
+            ((data.firstName && data.lastName) || data.name)
           ) {
             latestGaddiPlusRows.push({
               id: data.id,
-              name: data.name,
+              firstName: data.firstName || "",
+              lastName: data.lastName || "",
+              name: data.name || "",
               product: data.product,
               option: data.option,
               amount: data.amount,
               status: data.status,
+              createdAt: data.createdAt,
+              source: "gaddiPlus",
             });
           }
         });
@@ -1387,19 +1429,23 @@ function listenToGlafiTableData() {
           if (
             data &&
             data.id &&
-            data.name &&
             data.product &&
             data.option &&
             data.amount &&
-            data.status
+            data.status &&
+            ((data.firstName && data.lastName) || data.name)
           ) {
             latestGlafiRows.push({
               id: data.id,
-              name: data.name,
+              firstName: data.firstName || "",
+              lastName: data.lastName || "",
+              name: data.name || "",
               product: data.product,
               option: data.option,
               amount: data.amount,
               status: data.status,
+              createdAt: data.createdAt,
+              source: "glafi",
             });
           }
         });
@@ -1445,21 +1491,30 @@ function renderGaddiTable() {
     } else if (statusLower.includes("renew")) {
       statusColor = "color:#66bb6a;";
     }
+    // Use firstName and lastName if present, else try to split name
+    let firstName = row.firstName || "";
+    let lastName = row.lastName || "";
+    if (!firstName && !lastName && row.name) {
+      const parts = row.name.split(" ");
+      firstName = parts[0] || "";
+      lastName = parts.slice(1).join(" ");
+    }
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${row.id}</td>
-      <td>${row.name}</td>
-      <td>${row.product}</td>
-      <td>${row.option}</td>
-      <td>${row.amount}</td>
+      <td>${row.id || ""}</td>
+      <td>${firstName}</td>
+      <td>${lastName}</td>
+      <td>${row.product || ""}</td>
+      <td>${row.option || ""}</td>
+      <td>${row.amount || ""}</td>
       <td class="status ${row.status
         .toLowerCase()
-        .replace(/\s/g, "")}" style="${statusColor}">${row.status}</td>
+        .replace(/\s/g, "")}" style="${statusColor}">${row.status || ""}</td>
     `;
     tbody.appendChild(tr);
   }
   if (filteredRows.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6">No data found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7">No data found</td></tr>';
   }
 }
 
@@ -1487,21 +1542,29 @@ function renderGaddiPlusTable() {
     } else if (statusLower.includes("renew")) {
       statusColor = "color:#66bb6a;";
     }
+    let firstName = row.firstName || "";
+    let lastName = row.lastName || "";
+    if (!firstName && !lastName && row.name) {
+      const parts = row.name.split(" ");
+      firstName = parts[0] || "";
+      lastName = parts.slice(1).join(" ");
+    }
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${row.id}</td>
-      <td>${row.name}</td>
-      <td>${row.product}</td>
-      <td>${row.option}</td>
-      <td>${row.amount}</td>
+      <td>${row.id || ""}</td>
+      <td>${firstName}</td>
+      <td>${lastName}</td>
+      <td>${row.product || ""}</td>
+      <td>${row.option || ""}</td>
+      <td>${row.amount || ""}</td>
       <td class="status ${row.status
         .toLowerCase()
-        .replace(/\s/g, "")}" style="${statusColor}">${row.status}</td>
+        .replace(/\s/g, "")}" style="${statusColor}">${row.status || ""}</td>
     `;
     tbody.appendChild(tr);
   }
   if (filteredRows.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6">No data found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7">No data found</td></tr>';
   }
 }
 
@@ -1529,21 +1592,29 @@ function renderGlafiTable() {
     } else if (statusLower.includes("renew")) {
       statusColor = "color:#66bb6a;";
     }
+    let firstName = row.firstName || "";
+    let lastName = row.lastName || "";
+    if (!firstName && !lastName && row.name) {
+      const parts = row.name.split(" ");
+      firstName = parts[0] || "";
+      lastName = parts.slice(1).join(" ");
+    }
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${row.id}</td>
-      <td>${row.name}</td>
-      <td>${row.product}</td>
-      <td>${row.option}</td>
-      <td>${row.amount}</td>
+      <td>${row.id || ""}</td>
+      <td>${firstName}</td>
+      <td>${lastName}</td>
+      <td>${row.product || ""}</td>
+      <td>${row.option || ""}</td>
+      <td>${row.amount || ""}</td>
       <td class="status ${row.status
         .toLowerCase()
-        .replace(/\s/g, "")}" style="${statusColor}">${row.status}</td>
+        .replace(/\s/g, "")}" style="${statusColor}">${row.status || ""}</td>
     `;
     tbody.appendChild(tr);
   }
   if (filteredRows.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6">No data found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7">No data found</td></tr>';
   }
 }
 
@@ -1908,15 +1979,17 @@ function fetchAndDisplayAllData() {
         if (
           data &&
           data.id &&
-          data.name &&
           data.product &&
           data.option &&
           data.amount &&
-          data.status
+          data.status &&
+          ((data.firstName && data.lastName) || data.name)
         ) {
           allData.push({
             id: data.id,
-            name: data.name,
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+            name: data.name || "",
             product: data.product,
             option: data.option,
             amount: data.amount,
@@ -1933,15 +2006,17 @@ function fetchAndDisplayAllData() {
         if (
           data &&
           data.id &&
-          data.name &&
           data.product &&
           data.option &&
           data.amount &&
-          data.status
+          data.status &&
+          ((data.firstName && data.lastName) || data.name)
         ) {
           allData.push({
             id: data.id,
-            name: data.name,
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+            name: data.name || "",
             product: data.product,
             option: data.option,
             amount: data.amount,
@@ -1958,15 +2033,17 @@ function fetchAndDisplayAllData() {
         if (
           data &&
           data.id &&
-          data.name &&
           data.product &&
           data.option &&
           data.amount &&
-          data.status
+          data.status &&
+          ((data.firstName && data.lastName) || data.name)
         ) {
           allData.push({
             id: data.id,
-            name: data.name,
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+            name: data.name || "",
             product: data.product,
             option: data.option,
             amount: data.amount,
@@ -2019,10 +2096,16 @@ function displayAllDataInTable(data) {
     } else if (statusLower.includes("renew")) {
       statusColor = "color:#66bb6a;";
     }
-
+    let firstName = item.firstName || "";
+    let lastName = item.lastName || "";
+    if (!firstName && !lastName && item.name) {
+      const parts = item.name.split(" ");
+      firstName = parts[0] || "";
+      lastName = parts.slice(1).join(" ");
+    }
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${item.name}</td>
+      <td>${firstName} ${lastName}</td>
       <td>${item.product}</td>
       <td>${item.option}</td>
       <td>₱${item.amount}</td>
@@ -2059,15 +2142,17 @@ function filterHomeSectionData() {
         if (
           data &&
           data.id &&
-          data.name &&
           data.product &&
           data.option &&
           data.amount &&
-          data.status
+          data.status &&
+          ((data.firstName && data.lastName) || data.name)
         ) {
           allData.push({
             id: data.id,
-            name: data.name,
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+            name: data.name || "",
             product: data.product,
             option: data.option,
             amount: data.amount,
@@ -2084,15 +2169,17 @@ function filterHomeSectionData() {
         if (
           data &&
           data.id &&
-          data.name &&
           data.product &&
           data.option &&
           data.amount &&
-          data.status
+          data.status &&
+          ((data.firstName && data.lastName) || data.name)
         ) {
           allData.push({
             id: data.id,
-            name: data.name,
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+            name: data.name || "",
             product: data.product,
             option: data.option,
             amount: data.amount,
@@ -2109,15 +2196,17 @@ function filterHomeSectionData() {
         if (
           data &&
           data.id &&
-          data.name &&
           data.product &&
           data.option &&
           data.amount &&
-          data.status
+          data.status &&
+          ((data.firstName && data.lastName) || data.name)
         ) {
           allData.push({
             id: data.id,
-            name: data.name,
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+            name: data.name || "",
             product: data.product,
             option: data.option,
             amount: data.amount,
@@ -2236,6 +2325,79 @@ function setupHomeSectionRealTimeListeners() {
     .on("value", function () {
       fetchAndDisplayAllData();
     });
+}
+
+// --- Robust real-time listener for Collection section charts ---
+let transactionsChartListener = null;
+function setupCollectionChartsRealtimeListener() {
+  // Remove previous listener if any
+  if (transactionsChartListener) {
+    firebase
+      .database()
+      .ref("transactions")
+      .off("value", transactionsChartListener);
+    transactionsChartListener = null;
+  }
+  // Only set up listener if both charts exist
+  if (!window.revenueChart || !window.transactionsChart) {
+    setTimeout(setupCollectionChartsRealtimeListener, 300);
+    return;
+  }
+  const monthsArr = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  transactionsChartListener = function (snapshot) {
+    let revenuePerMonth = Array(12).fill(0);
+    let transactionsPerMonth = Array(12).fill(0);
+    snapshot.forEach((child) => {
+      const d = child.val();
+      if (d && d.amount && d.date) {
+        let dateObj = null;
+        if (d.date.includes("T")) {
+          dateObj = new Date(d.date);
+        } else {
+          dateObj = new Date(d.date + "T00:00:00");
+        }
+        if (!isNaN(dateObj)) {
+          const monthIdx = dateObj.getMonth();
+          let amt = d.amount;
+          if (typeof amt === "string") {
+            amt = amt.replace(/[^\d.]/g, "");
+            amt = parseFloat(amt);
+          }
+          if (!isNaN(amt)) {
+            revenuePerMonth[monthIdx] += amt;
+          }
+          transactionsPerMonth[monthIdx]++;
+        }
+      }
+    });
+    if (window.revenueChart) {
+      window.revenueChart.data.labels = monthsArr;
+      window.revenueChart.data.datasets[0].data = revenuePerMonth;
+      window.revenueChart.update();
+    }
+    if (window.transactionsChart) {
+      window.transactionsChart.data.labels = monthsArr;
+      window.transactionsChart.data.datasets[0].data = transactionsPerMonth;
+      window.transactionsChart.update();
+    }
+  };
+  firebase
+    .database()
+    .ref("transactions")
+    .on("value", transactionsChartListener);
 }
 
 // Initialize everything when DOM is loaded
@@ -2475,6 +2637,140 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     }
   );
+
+  // Commission Add Modal event listeners
+  const commissionAddBtn = document.querySelector(
+    "#commission-fab-container .commadd"
+  );
+  const commissionUpdateBtn = document.querySelector(
+    "#commission-fab-container .commupdate"
+  );
+  const commissionModal = document.getElementById("commissionModal");
+  const commissionAddForm = document.getElementById("commissionAddForm");
+  const commissionUpdateModal = document.getElementById(
+    "commissionUpdateModal"
+  );
+  const commissionUpdateForm = document.getElementById("commissionUpdateForm");
+  if (commissionAddBtn && commissionModal && commissionAddForm) {
+    commissionAddBtn.addEventListener("click", function () {
+      // Auto-generate Agent ID
+      const nextId = (getMaxAgentId() + 1).toString().padStart(4, "0");
+      commissionAddForm.agentId.value = nextId;
+      commissionAddForm.agentId.readOnly = true;
+      openCommissionModal();
+    });
+    commissionModal
+      .querySelector(".modal-close")
+      .addEventListener("click", closeCommissionModal);
+    commissionAddForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      // Get form values
+      const agentId = commissionAddForm.agentId.value;
+      const firstName = commissionAddForm.firstName.value;
+      const lastName = commissionAddForm.lastName.value;
+      // Store in Firebase Realtime Database
+      try {
+        await firebase
+          .database()
+          .ref("agents/" + agentId)
+          .set({
+            agentId,
+            firstName,
+            lastName,
+            numberOfInvites: 0,
+            commission: 0,
+            metrics: 0,
+            createdAt: new Date().toISOString(),
+          });
+        // (Table will update automatically via real-time listener)
+        commissionAddForm.reset();
+        closeCommissionModal();
+        alert("Agent added successfully!");
+      } catch (err) {
+        alert("Failed to add agent to Firebase: " + err.message);
+      }
+    });
+  }
+  // Update Agent Modal event listeners
+  if (commissionUpdateBtn && commissionUpdateModal && commissionUpdateForm) {
+    commissionUpdateBtn.addEventListener("click", async function () {
+      // Populate agent select dropdown
+      const select = commissionUpdateForm.agentId;
+      select.innerHTML = '<option value="">Select Agent</option>';
+      let agentData = {};
+      try {
+        const snapshot = await firebase.database().ref("agents").once("value");
+        snapshot.forEach((child) => {
+          const data = child.val();
+          if (data && data.agentId) {
+            agentData[data.agentId] = data;
+            select.innerHTML += `<option value='${data.agentId}'>${data.agentId} - ${data.firstName} ${data.lastName}</option>`;
+          }
+        });
+      } catch (err) {}
+      // When an agent is selected, prefill the form
+      select.onchange = function () {
+        const data = agentData[select.value];
+        if (data) {
+          commissionUpdateForm.firstName.value = data.firstName;
+          commissionUpdateForm.lastName.value = data.lastName;
+        } else {
+          commissionUpdateForm.firstName.value = "";
+          commissionUpdateForm.lastName.value = "";
+        }
+      };
+      openCommissionUpdateModal();
+    });
+    commissionUpdateModal
+      .querySelector(".modal-close")
+      .addEventListener("click", closeCommissionUpdateModal);
+    commissionUpdateForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const agentId = commissionUpdateForm.agentId.value;
+      const firstName = commissionUpdateForm.firstName.value;
+      const lastName = commissionUpdateForm.lastName.value;
+      if (!agentId) {
+        alert("Please select an agent to update.");
+        return;
+      }
+      try {
+        await firebase
+          .database()
+          .ref("agents/" + agentId)
+          .update({ firstName, lastName });
+        closeCommissionUpdateModal();
+        alert("Agent updated successfully!");
+      } catch (err) {
+        alert("Failed to update agent: " + err.message);
+      }
+    });
+  }
+
+  // Fetch and render all agents from Firebase in real-time
+  listenToAgentsTable();
+  // Fetch and render all agents from Firebase in real-time for both tables
+  listenToAgentsTables();
+
+  // Fetch and display all transactions in Collection section on page load
+  fetchAndDisplayAllTransactions();
+  // Add event listener to Collection menu item to refresh transactions when navigating
+  const collectionMenuItem = document.querySelector(
+    ".sidebar-menu .menu-item[onclick*=\"showSection('collection-section')\"]"
+  );
+  if (collectionMenuItem) {
+    collectionMenuItem.addEventListener(
+      "click",
+      fetchAndDisplayAllTransactions
+    );
+  }
+
+  // Set up real-time listeners for home section updates
+  setupHomeSectionRealTimeListeners();
+
+  // --- Add this: update Collection charts with real transaction data ---
+  updateCollectionChartsWithTransactions();
+
+  setupCollectionChartsRealtimeListener();
 });
 
 // Place the new function after updateSummaryCardCounters
@@ -2537,4 +2833,223 @@ function updateHomeDashboardCharts(allData) {
     window.renewalChartInstance.data.datasets[0].data = statusCounts.renewed;
     window.renewalChartInstance.update();
   }
+}
+
+// Commission Add Modal logic
+function openCommissionModal() {
+  document.getElementById("commissionModal").classList.add("active");
+}
+function closeCommissionModal() {
+  document.getElementById("commissionModal").classList.remove("active");
+}
+
+// Utility: Get the max Agent ID from the Agents table
+function getMaxAgentId() {
+  const tbody = document.querySelector(
+    ".commission-half-box .commission-table tbody"
+  );
+  let maxId = 0;
+  if (!tbody) return maxId;
+  tbody.querySelectorAll("tr").forEach((row) => {
+    const idCell = row.querySelector("td");
+    if (idCell) {
+      const val = parseInt(idCell.textContent, 10);
+      if (!isNaN(val) && val > maxId) maxId = val;
+    }
+  });
+  return maxId;
+}
+
+// Fetch and render all agents from Firebase in real-time
+function listenToAgentsTable() {
+  const tbody = document.querySelector(
+    ".commission-half-box .commission-table tbody"
+  );
+  if (!tbody) return;
+  firebase
+    .database()
+    .ref("agents")
+    .on("value", (snapshot) => {
+      tbody.innerHTML = "";
+      snapshot.forEach((child) => {
+        const data = child.val();
+        if (data && data.agentId && data.firstName && data.lastName) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${data.agentId}</td><td>${data.firstName} ${
+            data.lastName
+          }</td><td>${data.numberOfInvites || 0}</td><td>${
+            data.commission || 0
+          }</td><td>${data.metrics || 0}</td>`;
+          tbody.appendChild(tr);
+        }
+      });
+    });
+}
+
+// Fetch and render all agents from Firebase in real-time for both tables
+function listenToAgentsTables() {
+  // Full-width Agent Reports table
+  const fullTbody = document.getElementById("commissionTableBody");
+  // Bottom left Agents table
+  const leftTbody = document.querySelector(
+    ".gray-boxes-container > .gray-box.commission-half-box.scrollable table.commission-table tbody"
+  );
+  if (!fullTbody || !leftTbody) return;
+  firebase
+    .database()
+    .ref("agents")
+    .on("value", (snapshot) => {
+      // Populate full-width table
+      fullTbody.innerHTML = "";
+      // Populate left table
+      leftTbody.innerHTML = "";
+      snapshot.forEach((child) => {
+        const data = child.val();
+        if (data && data.agentId && data.firstName && data.lastName) {
+          // Full-width table: all fields
+          const trFull = document.createElement("tr");
+          trFull.innerHTML = `<td>${data.agentId}</td><td>${
+            data.firstName
+          }</td><td>${data.lastName}</td><td>${
+            data.numberOfInvites || 0
+          }</td><td>${data.commission || 0}</td><td>${data.metrics || 0}</td>`;
+          fullTbody.appendChild(trFull);
+          // Left table: only ID and full name
+          const trLeft = document.createElement("tr");
+          trLeft.innerHTML = `<td>${data.agentId}</td><td>${data.firstName} ${data.lastName}</td>`;
+          leftTbody.appendChild(trLeft);
+        }
+      });
+    });
+}
+
+// Add modal open/close helpers
+function openCommissionUpdateModal() {
+  document.getElementById("commissionUpdateModal").classList.add("active");
+}
+function closeCommissionUpdateModal() {
+  document.getElementById("commissionUpdateModal").classList.remove("active");
+}
+
+// --- Add this function to fetch and display all transactions from /transactions in the Collection section history table ---
+let transactionsListener = null;
+function fetchAndDisplayAllTransactions() {
+  const tbody = document.querySelector(
+    "#collection-section .gdash-history-box .gdash-table-scroll-wrapper .gdash-table tbody"
+  );
+  if (!tbody) return;
+  tbody.innerHTML =
+    '<tr><td colspan="7" style="text-align:center; color:#888; padding:20px;">Loading...</td></tr>';
+  // Remove previous listener if any
+  if (transactionsListener) {
+    firebase.database().ref("transactions").off("value", transactionsListener);
+  }
+  transactionsListener = function (snapshot) {
+    let all = [];
+    snapshot.forEach((child) => {
+      const d = child.val();
+      if (
+        d &&
+        d.id &&
+        d.firstName !== undefined &&
+        d.lastName !== undefined &&
+        d.product &&
+        d.option &&
+        d.amount &&
+        d.date
+      ) {
+        all.push({
+          id: d.id,
+          lastName: d.lastName,
+          firstName: d.firstName,
+          product: d.product,
+          option: d.option,
+          payment: d.amount,
+          date: d.date ? d.date.split("T")[0] : "",
+        });
+      }
+    });
+    // Sort by date descending
+    all.sort((a, b) => (a.date < b.date ? 1 : -1));
+    tbody.innerHTML = "";
+    if (all.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="7" style="text-align:center; color:#888; padding:20px;">No transactions found</td></tr>';
+      return;
+    }
+    all.forEach((item) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${item.id}</td><td>${item.lastName}</td><td>${item.firstName}</td><td>${item.product}</td><td>${item.option}</td><td>₱${item.payment}</td><td>${item.date}</td>`;
+      tbody.appendChild(tr);
+    });
+  };
+  firebase.database().ref("transactions").on("value", transactionsListener);
+}
+
+// --- Add this function to update Collection section charts with real transaction data ---
+function updateCollectionChartsWithTransactions() {
+  // Prepare months
+  const monthsArr = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  // Initialize revenue and transaction counts
+  let revenuePerMonth = Array(12).fill(0);
+  let transactionsPerMonth = Array(12).fill(0);
+
+  firebase
+    .database()
+    .ref("transactions")
+    .on("value", (snapshot) => {
+      // Reset arrays each time
+      revenuePerMonth = Array(12).fill(0);
+      transactionsPerMonth = Array(12).fill(0);
+      snapshot.forEach((child) => {
+        const d = child.val();
+        if (d && d.amount && d.date) {
+          // Parse date
+          let dateObj = null;
+          if (d.date.includes("T")) {
+            dateObj = new Date(d.date);
+          } else {
+            // Fallback: try parsing as yyyy-mm-dd
+            dateObj = new Date(d.date + "T00:00:00");
+          }
+          if (!isNaN(dateObj)) {
+            const monthIdx = dateObj.getMonth();
+            // Parse amount (remove ₱ and commas if present)
+            let amt = d.amount;
+            if (typeof amt === "string") {
+              amt = amt.replace(/[^\d.]/g, "");
+              amt = parseFloat(amt);
+            }
+            if (!isNaN(amt)) {
+              revenuePerMonth[monthIdx] += amt;
+            }
+            transactionsPerMonth[monthIdx]++;
+          }
+        }
+      });
+      // Only update if charts are defined
+      if (window.revenueChart) {
+        window.revenueChart.data.labels = monthsArr;
+        window.revenueChart.data.datasets[0].data = revenuePerMonth;
+        window.revenueChart.update();
+      }
+      if (window.transactionsChart) {
+        window.transactionsChart.data.labels = monthsArr;
+        window.transactionsChart.data.datasets[0].data = transactionsPerMonth;
+        window.transactionsChart.update();
+      }
+    });
 }

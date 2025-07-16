@@ -24,13 +24,12 @@
       <div class="header-right">
         <span class="phone">1-234-567-890</span>
         <div class="login-container">
-          <button class="login-btn" onclick="toggleLoginOptions(event)">
+          <button
+            class="login-btn"
+            onclick="window.location.href='login2.html'"
+          >
             Log In
           </button>
-          <div class="login-dropdown">
-            <a href="login2.html" class="login-option admin">ZC Login</a>
-            <a href="login.html" class="login-option member">Admin Login</a>
-          </div>
         </div>
       </div>
     </header>
@@ -71,27 +70,6 @@
         const box = document.querySelector(".chatbox");
         box.style.display = box.style.display === "flex" ? "none" : "flex";
       }
-
-      function toggleLoginOptions(event) {
-        event.preventDefault();
-        const dropdown = document.querySelector(".login-dropdown");
-        dropdown.classList.toggle("show");
-
-        document.addEventListener("click", function closeDropdown(e) {
-          if (!e.target.closest(".login-container")) {
-            dropdown.classList.remove("show");
-            document.removeEventListener("click", closeDropdown);
-          }
-        });
-      }
-
-      // Close dropdown on scroll
-      window.addEventListener("scroll", function () {
-        const dropdown = document.querySelector(".login-dropdown.show");
-        if (dropdown) {
-          dropdown.classList.remove("show");
-        }
-      });
     </script>
   </body>
 </html>

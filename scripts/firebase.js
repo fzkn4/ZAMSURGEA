@@ -9,3 +9,5 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
+// Add this comment: Make sure to include the Realtime Database SDK in your HTML for database access.

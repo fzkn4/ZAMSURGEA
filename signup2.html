@@ -27,13 +27,23 @@
 
         <div class="form-group">
           <label>Name</label>
-          <input type="text" placeholder="First" />
-          <input type="text" placeholder="Last" />
+          <input
+            type="text"
+            placeholder="First"
+            name="firstName"
+            id="firstName"
+          />
+          <input type="text" placeholder="Last" name="lastName" id="lastName" />
         </div>
 
         <div class="form-group">
-          <input type="text" placeholder="Middle" />
-          <select>
+          <input
+            type="text"
+            placeholder="Middle"
+            name="middleName"
+            id="middleName"
+          />
+          <select name="suffix" id="suffix">
             <option>Suffix</option>
             <option>Jr.</option>
             <option>Sr.</option>
@@ -44,17 +54,17 @@
 
         <div class="form-group">
           <label>Mother's Maiden Name</label>
-          <input type="text" />
+          <input type="text" name="motherMaidenName" id="motherMaidenName" />
         </div>
 
         <div class="form-group">
           <div style="flex: 1 1 45%">
             <label>Date of Birth</label>
-            <input type="date" />
+            <input type="date" name="dob" id="dob" />
           </div>
           <div style="flex: 1 1 45%">
             <label>Citizenship</label>
-            <input type="text" />
+            <input type="text" name="citizenship" id="citizenship" />
           </div>
         </div>
 
@@ -62,11 +72,12 @@
           <button class="btn" onclick="window.location.href='login2.html'">
             &#8592; Back to Login
           </button>
-          <button class="btn" onclick="window.location.href='setup.html'">
+          <button class="btn" type="button" id="signup2Next">
             Next &#8594;
           </button>
         </div>
       </div>
     </div>
+    <script src="/scripts/signup2.js"></script>
   </body>
 </html>

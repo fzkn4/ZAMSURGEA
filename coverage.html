@@ -182,36 +182,49 @@
         <div class="scrollable-content">
           <div class="form-group">
             <label>Insurance Product</label>
-            <select>
+            <select name="insuranceProduct" id="insuranceProduct">
               <option>Select Product</option>
+              <option value="GADDI">GADDI</option>
+              <option value="GADDI PLUS">GADDI PLUS</option>
+              <option value="GLAFI">GLAFI</option>
             </select>
           </div>
 
           <div class="form-group">
             <label>Amount of Deposit</label>
-            <input type="number" placeholder="Enter amount" />
+            <input
+              type="number"
+              placeholder="Enter amount"
+              name="depositAmount"
+              id="depositAmount"
+            />
           </div>
 
           <div class="form-group">
             <label>Option No.</label>
-            <select>
+            <select name="optionNo" id="optionNo">
               <option>Select Option</option>
             </select>
           </div>
 
           <div class="form-group">
             <label>Effectivity</label>
-            <input type="date" />
+            <input type="date" name="effectivity" id="effectivity" />
           </div>
 
           <div class="form-group">
             <label>Valid until</label>
-            <input type="date" />
+            <input type="date" name="validUntil" id="validUntil" />
           </div>
 
           <div class="form-group">
             <label>Who referred you?</label>
-            <input type="text" placeholder="Enter name" />
+            <input
+              type="text"
+              placeholder="Enter name"
+              name="referrer"
+              id="referrer"
+            />
           </div>
         </div>
 
@@ -219,11 +232,16 @@
           <button class="btn" onclick="window.location.href='setup.html'">
             &#8592; Back to Set-Up Account
           </button>
-          <button class="btn" onclick="window.location.href='login2.html'">
+          <button class="btn" type="button" id="coverageFinish">
             Finish &#8594;
           </button>
         </div>
       </div>
     </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="/scripts/firebase.js"></script>
+    <script src="/scripts/coverage.js"></script>
   </body>
 </html>
