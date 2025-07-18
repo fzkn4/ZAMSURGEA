@@ -3,9 +3,390 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard</title>
+    <title>Client Dashboard</title>
+    <link rel="icon" type="image/png" href="/img/tab-logo.png" />
+    <link rel="stylesheet" href="styles/client_dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
   </head>
   <body>
-    <h1>client</h1>
+    <div class="dashboard-container">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <img src="/img/tab-logo.png" alt="Logo" class="logo" />
+          <span>Zamsurgea Community Multi‑Purpose Cooperative</span>
+        </div>
+        <nav class="sidebar-menu">
+          <div class="menu-item" onclick="showSection('home-section')">
+            <i class="fas fa-house"></i> Home
+          </div>
+          <div class="menu-item" onclick="showSection('credentials-section')">
+            <i class="fas fa-id-card"></i> Credentials
+          </div>
+          <div class="menu-item" onclick="showSection('calendar-section')">
+            <i class="fas fa-calendar"></i> ZCMP calendar
+          </div>
+        </nav>
+        <div class="user-profile">
+          <i class="fa-solid fa-user"></i>
+          <div class="user-info">
+            <span>Zahir Fernandez</span><br />
+            <small>User</small>
+          </div>
+          <i
+            class="fas fa-chevron-down dropdown-icon"
+            onclick="toggleUserDropdown()"
+          ></i>
+
+          <!-- User Dropdown Menu -->
+          <div class="user-dropdown" id="userDropdown">
+            <div class="dropdown-item" onclick="showSection('profile-section')">
+              <i class="fas fa-user-circle"></i> My Profile
+            </div>
+            <div
+              class="dropdown-item"
+              onclick="showSection('settings-section')"
+            >
+              <i class="fas fa-cog"></i> Settings
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </div>
+          </div>
+        </div>
+      </aside>
+      <!-- MAIN CONTENT PLACEHOLDER -->
+      <main class="content">
+        <!-- HOME SECTION -->
+        <section id="home-section" class="content-section active">
+          <div class="dashboard-block">
+            <h2>Welcome to Client Dashboard</h2>
+            <p>
+              Stay updated with your insurance due dates, payments, and
+              important announcements.
+            </p>
+
+            <!-- ANNOUNCEMENTS SECTION -->
+            <div class="announcements-container">
+              <div class="announcements-header">
+                <h3><i class="fas fa-bullhorn"></i> Important Announcements</h3>
+                <div class="announcement-filters">
+                  <button
+                    class="filter-btn active"
+                    onclick="filterAnnouncements('all')"
+                  >
+                    All
+                  </button>
+                  <button
+                    class="filter-btn"
+                    onclick="filterAnnouncements('due')"
+                  >
+                    Due Soon
+                  </button>
+                  <button
+                    class="filter-btn"
+                    onclick="filterAnnouncements('overdue')"
+                  >
+                    Overdue
+                  </button>
+                  <button
+                    class="filter-btn"
+                    onclick="filterAnnouncements('payment')"
+                  >
+                    Payments
+                  </button>
+                </div>
+              </div>
+
+              <div class="announcements-list" id="announcementsList">
+                <!-- Announcements will be loaded dynamically -->
+                <div class="announcement-item due-soon">
+                  <div class="announcement-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                  </div>
+                  <div class="announcement-content">
+                    <h4>Insurance Premium Due Soon</h4>
+                    <p>
+                      Your GLAFI insurance premium of ₱1,000 is due on
+                      <strong>July 25, 2025</strong>. Please ensure timely
+                      payment to maintain coverage.
+                    </p>
+                    <div class="announcement-meta">
+                      <span class="announcement-date">July 16, 2025</span>
+                      <span class="announcement-type due">Due Soon</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="announcement-item payment-success">
+                  <div class="announcement-icon">
+                    <i class="fas fa-check-circle"></i>
+                  </div>
+                  <div class="announcement-content">
+                    <h4>Payment Confirmed</h4>
+                    <p>
+                      Your deposit payment of ₱1,000 has been successfully
+                      processed. Your insurance coverage is now active until
+                      <strong>July 16, 2026</strong>.
+                    </p>
+                    <div class="announcement-meta">
+                      <span class="announcement-date">July 16, 2025</span>
+                      <span class="announcement-type success"
+                        >Payment Success</span
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="announcement-item renewal-notice">
+                  <div class="announcement-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                  </div>
+                  <div class="announcement-content">
+                    <h4>Insurance Renewal Notice</h4>
+                    <p>
+                      Your GLAFI insurance policy will expire on
+                      <strong>July 16, 2026</strong>. Consider renewing early to
+                      avoid any coverage gaps.
+                    </p>
+                    <div class="announcement-meta">
+                      <span class="announcement-date">July 16, 2025</span>
+                      <span class="announcement-type renewal"
+                        >Renewal Notice</span
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="announcement-item overdue">
+                  <div class="announcement-icon">
+                    <i class="fas fa-times-circle"></i>
+                  </div>
+                  <div class="announcement-content">
+                    <h4>Payment Overdue</h4>
+                    <p>
+                      Your monthly premium payment of ₱500 was due on
+                      <strong>July 1, 2025</strong> and is now overdue. Please
+                      make payment immediately to avoid policy cancellation.
+                    </p>
+                    <div class="announcement-meta">
+                      <span class="announcement-date">July 16, 2025</span>
+                      <span class="announcement-type overdue">Overdue</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- No Announcements Message -->
+              <div
+                class="no-announcements"
+                id="noAnnouncements"
+                style="display: none"
+              >
+                <i class="fas fa-inbox"></i>
+                <h4>No Announcements</h4>
+                <p>
+                  You're all caught up! No pending announcements at this time.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CREDENTIALS SECTION -->
+        <section id="credentials-section" class="content-section">
+          <div class="dashboard-block">
+            <h2>My Credentials</h2>
+            <p>
+              View and manage your account credentials and personal information.
+            </p>
+            <div class="credentials-info">
+              <div class="info-card">
+                <h3>Personal Information</h3>
+                <div id="personal-info">
+                  <p>
+                    <strong>Full Name:</strong>
+                    <span id="user-full-name">Loading...</span>
+                  </p>
+                  <p>
+                    <strong>Email:</strong>
+                    <span id="user-email">Loading...</span>
+                  </p>
+                  <p>
+                    <strong>Phone:</strong>
+                    <span id="user-phone">Loading...</span>
+                  </p>
+                  <p>
+                    <strong>Date of Birth:</strong>
+                    <span id="user-dob">Loading...</span>
+                  </p>
+                  <p>
+                    <strong>Mother's Maiden Name:</strong>
+                    <span id="user-mother-name">Loading...</span>
+                  </p>
+                </div>
+              </div>
+              <div class="info-card">
+                <h3>Insurance Information</h3>
+                <div id="insurance-info">
+                  <p>
+                    <strong>Insurance Product:</strong>
+                    <span id="user-insurance-product">Loading...</span>
+                  </p>
+                  <p>
+                    <strong>Option:</strong>
+                    <span id="user-option">Loading...</span>
+                  </p>
+                  <p>
+                    <strong>Deposit Amount:</strong>
+                    <span id="user-deposit">Loading...</span>
+                  </p>
+                  <p>
+                    <strong>Effectivity Date:</strong>
+                    <span id="user-effectivity">Loading...</span>
+                  </p>
+                  <p>
+                    <strong>Valid Until:</strong>
+                    <span id="user-valid-until">Loading...</span>
+                  </p>
+                </div>
+              </div>
+              <div class="info-card">
+                <h3>Account Status</h3>
+                <div id="account-status">
+                  <p>
+                    <strong>Status:</strong>
+                    <span class="status-active" id="user-status">Active</span>
+                  </p>
+                  <p>
+                    <strong>Member Since:</strong>
+                    <span id="user-created">Loading...</span>
+                  </p>
+                  <p>
+                    <strong>Referrer ID:</strong>
+                    <span id="user-referrer">Loading...</span>
+                  </p>
+                  <p>
+                    <strong>Last Login:</strong>
+                    <span id="user-last-login">Today</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ZCMP CALENDAR SECTION -->
+        <section id="calendar-section" class="content-section">
+          <div class="dashboard-block">
+            <h2>ZCMP Calendar</h2>
+            <p>
+              View upcoming events, meetings, and important dates from Zamsurgea
+              Community Multi-Purpose Cooperative.
+            </p>
+            <div class="calendar-events">
+              <div class="event-card">
+                <h3>Upcoming Events</h3>
+                <div class="event-item">
+                  <div class="event-date">Dec 25, 2024</div>
+                  <div class="event-details">
+                    <h4>Christmas Celebration</h4>
+                    <p>Annual Christmas gathering for all members</p>
+                  </div>
+                </div>
+                <div class="event-item">
+                  <div class="event-date">Jan 15, 2025</div>
+                  <div class="event-details">
+                    <h4>Annual General Assembly</h4>
+                    <p>Yearly meeting to discuss cooperative plans</p>
+                  </div>
+                </div>
+                <div class="event-item">
+                  <div class="event-date">Feb 28, 2025</div>
+                  <div class="event-details">
+                    <h4>Member Training Workshop</h4>
+                    <p>Financial literacy and cooperative education</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PROFILE SECTION -->
+        <section id="profile-section" class="content-section">
+          <div class="dashboard-block">
+            <h2>My Profile</h2>
+            <p>Manage your profile information and account settings.</p>
+            <div class="profile-form">
+              <form>
+                <div class="form-group">
+                  <label>First Name</label>
+                  <input type="text" value="Zahir" />
+                </div>
+                <div class="form-group">
+                  <label>Last Name</label>
+                  <input type="text" value="Fernandez" />
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input type="email" value="zahir.fernandez@email.com" />
+                </div>
+                <div class="form-group">
+                  <label>Phone</label>
+                  <input type="tel" value="+63 912 345 6789" />
+                </div>
+                <button type="submit">Update Profile</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- SETTINGS SECTION -->
+        <section id="settings-section" class="content-section">
+          <div class="dashboard-block">
+            <h2>Account Settings</h2>
+            <p>Configure your account preferences and security settings.</p>
+            <div class="settings-options">
+              <div class="setting-group">
+                <h3>Security Settings</h3>
+                <div class="setting-item">
+                  <label>Change Password</label>
+                  <button>Update Password</button>
+                </div>
+                <div class="setting-item">
+                  <label>Two-Factor Authentication</label>
+                  <button>Enable 2FA</button>
+                </div>
+              </div>
+              <div class="setting-group">
+                <h3>Notification Preferences</h3>
+                <div class="setting-item">
+                  <label>Email Notifications</label>
+                  <input type="checkbox" checked />
+                </div>
+                <div class="setting-item">
+                  <label>SMS Notifications</label>
+                  <input type="checkbox" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="scripts/client_dashboard.js"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+
+    <!-- Firebase Configuration -->
+    <script src="scripts/firebase.js"></script>
   </body>
 </html>
