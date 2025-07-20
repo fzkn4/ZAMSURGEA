@@ -3053,3 +3053,46 @@ function updateCollectionChartsWithTransactions() {
       }
     });
 }
+
+// Add this function to update user name in sidebar and header
+async function updateDashboardUserName() {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+  // Try to fetch user data from /users/{uid}
+  const userRef = firebase.database().ref("users/" + user.uid);
+  const snapshot = await userRef.once("value");
+  let fullName = user.email;
+  let role = "User";
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+    if (data.firstName || data.lastName) {
+      fullName = `${data.firstName || ""} ${data.lastName || ""}`.trim();
+    } else if (data.fullName) {
+      fullName = data.fullName;
+    } else if (data.email) {
+      fullName = data.email;
+    }
+    if (data.role) {
+      role = data.role.charAt(0).toUpperCase() + data.role.slice(1);
+    }
+  }
+  // Sidebar name
+  const sidebarSpan = document.querySelector(".user-profile .user-info span");
+  if (sidebarSpan) sidebarSpan.textContent = fullName;
+  // Sidebar role
+  const sidebarRole = document.querySelector(".user-profile .user-info small");
+  if (sidebarRole) sidebarRole.textContent = role;
+  // Header
+  const welcomeText = document.querySelector(".header-text .welcome-text");
+  if (welcomeText) welcomeText.textContent = `Welcome, ${fullName}!`;
+}
+
+// ... existing code ...
+// Attach to auth state
+firebase.auth().onAuthStateChanged(function (user) {
+  if (user) {
+    updateDashboardUserName();
+    // ... (other logic can remain here)
+  }
+});
+// ... existing code ...
