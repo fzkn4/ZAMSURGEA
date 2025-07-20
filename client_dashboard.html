@@ -10,6 +10,10 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/3.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css"
+    />
   </head>
   <body>
     <div class="dashboard-container">
@@ -37,26 +41,9 @@
             <small>User</small>
           </div>
           <i
-            class="fas fa-chevron-down dropdown-icon"
-            onclick="toggleUserDropdown()"
+            class="fi fi-br-arrow-left-from-arc"
+            onclick="showLogoutModal()"
           ></i>
-
-          <!-- User Dropdown Menu -->
-          <div class="user-dropdown" id="userDropdown">
-            <div class="dropdown-item" onclick="showSection('profile-section')">
-              <i class="fas fa-user-circle"></i> My Profile
-            </div>
-            <div
-              class="dropdown-item"
-              onclick="showSection('settings-section')"
-            >
-              <i class="fas fa-cog"></i> Settings
-            </div>
-            <div class="dropdown-divider"></div>
-            <div class="dropdown-item" onclick="logout()">
-              <i class="fas fa-sign-out-alt"></i> Logout
-            </div>
-          </div>
         </div>
       </aside>
       <!-- MAIN CONTENT PLACEHOLDER -->
@@ -388,5 +375,68 @@
 
     <!-- Firebase Configuration -->
     <script src="scripts/firebase.js"></script>
+
+    <!-- Logout Confirmation Modal -->
+    <div
+      id="logoutModal"
+      class="modal"
+      style="
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.3);
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <div
+        style="
+          background: #fff;
+          padding: 32px 24px;
+          border-radius: 12px;
+          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+          min-width: 320px;
+          text-align: center;
+        "
+      >
+        <h3 style="margin-bottom: 16px; color: #2f619e">Confirm Logout</h3>
+        <p style="margin-bottom: 24px; color: #444">
+          Are you sure you want to logout?
+        </p>
+        <button
+          id="confirmLogoutBtn"
+          style="
+            background: #2f619e;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 24px;
+            margin-right: 12px;
+            font-weight: 600;
+            cursor: pointer;
+          "
+        >
+          Yes, Logout
+        </button>
+        <button
+          id="cancelLogoutBtn"
+          style="
+            background: #eee;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 24px;
+            font-weight: 600;
+            cursor: pointer;
+          "
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
   </body>
 </html>

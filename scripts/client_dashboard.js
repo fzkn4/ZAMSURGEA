@@ -47,15 +47,6 @@ function showSection(sectionId) {
   }
 }
 
-function toggleUserDropdown() {
-  const userProfile = document.querySelector(".user-profile");
-  const userDropdown = document.getElementById("userDropdown");
-  if (userProfile && userDropdown) {
-    userDropdown.classList.toggle("show");
-    userProfile.classList.toggle("active");
-  }
-}
-
 function logout() {
   // Show loading state
   const logoutBtn = event.target;
@@ -107,6 +98,31 @@ function logout() {
       }, 3000);
     });
 }
+
+// Replace the logout icon's onclick to show the modal
+// In HTML: <i class="fi fi-br-arrow-left-from-arc" onclick="showLogoutModal()"></i>
+
+function showLogoutModal() {
+  const modal = document.getElementById("logoutModal");
+  if (modal) modal.style.display = "flex";
+}
+
+function hideLogoutModal() {
+  const modal = document.getElementById("logoutModal");
+  if (modal) modal.style.display = "none";
+}
+
+// Attach modal button events after DOM is loaded
+window.addEventListener("DOMContentLoaded", function () {
+  const confirmBtn = document.getElementById("confirmLogoutBtn");
+  const cancelBtn = document.getElementById("cancelLogoutBtn");
+  if (confirmBtn)
+    confirmBtn.onclick = function () {
+      hideLogoutModal();
+      logout();
+    };
+  if (cancelBtn) cancelBtn.onclick = hideLogoutModal;
+});
 
 // Function to fetch current user data from Firebase
 async function fetchCurrentUserData() {
@@ -310,24 +326,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Function to initialize dashboard functionality
 function initializeDashboard(user) {
-  const userProfile = document.querySelector(".user-profile");
-  const userDropdown = document.getElementById("userDropdown");
-
-  if (userProfile && userDropdown) {
-    // Hide dropdown when clicking outside
-    document.addEventListener("click", function (e) {
-      if (userDropdown.classList.contains("show")) {
-        userDropdown.classList.remove("show");
-        userProfile.classList.remove("active");
-      }
-    });
-
-    // Prevent dropdown from closing when clicking inside
-    userDropdown.addEventListener("click", function (e) {
-      e.stopPropagation();
-    });
-  }
-
   // Load user data
   updateSidebarUserProfile();
 
