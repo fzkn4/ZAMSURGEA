@@ -595,6 +595,9 @@ function markAllAsRead() {
 function updateNotificationCount() {
   const count = document.querySelectorAll(".notification-item").length;
   document.querySelector(".badge").textContent = count;
+  // Update sidebar notification bubble
+  const sidebarBadge = document.querySelector(".sidebar-badge");
+  if (sidebarBadge) sidebarBadge.textContent = count;
 }
 
 // Modal logic for Add, Update, Print (GADDI, GADDI Plus, GLAFI)
