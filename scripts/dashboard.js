@@ -616,12 +616,15 @@ function openModal(type, btn) {
   if (type === "add") {
     // GADDI-specific form
     if (sectionId === "gaddi-section") {
-      // Always fetch the highest ID from the database each time the modal opens
       title.textContent = `Add Entry - ${sectionTitle}`;
       body.innerHTML = `<form id='addForm'>
-        <label>ID No.: <input type='text' name='id' id='gaddiIdInput' readonly></label>
-        <label>First Name: <input type='text' name='firstName' id='gaddiFirstNameInput' required></label>
-        <label>Last Name: <input type='text' name='lastName' id='gaddiLastNameInput' required></label>
+        <label>Select Client ID:
+          <select name='clientId' id='gaddiClientIdSelect' required>
+            <option value=''>Loading clients...</option>
+          </select>
+        </label>
+        <label>First Name: <input type='text' name='firstName' id='gaddiFirstNameInput' readonly required></label>
+        <label>Last Name: <input type='text' name='lastName' id='gaddiLastNameInput' readonly required></label>
         <label>Product Name: <input type='text' name='product' value='GADDI' readonly></label>
         <label>Option #:
           <select name='option' id='gaddiOptionSelect'>
@@ -634,32 +637,127 @@ function openModal(type, btn) {
         <button type='submit'>Add</button>
       </form>`;
       setTimeout(async () => {
-        let newId = 100000;
+        // Populate client dropdown
+        const clientSelect = document.getElementById("gaddiClientIdSelect");
+        clientSelect.innerHTML = '<option value="">Select Client</option>';
+
         try {
-          const snapshot = await firebase.database().ref("gaddi").once("value");
-          let maxId = 100000;
-          let foundKeys = [];
-          let allKeys = [];
-          snapshot.forEach((child) => {
-            allKeys.push(child.key);
-            // Only consider keys that are all digits
-            if (/^\d+$/.test(child.key)) {
-              const val = parseInt(child.key, 10);
-              foundKeys.push(val);
-              if (!isNaN(val) && val > maxId) maxId = val;
+          // Fetch all clients from users collection
+          const usersSnapshot = await firebase
+            .database()
+            .ref("users")
+            .once("value");
+          const clients = [];
+
+          usersSnapshot.forEach((child) => {
+            const userData = child.val();
+            if (userData && userData.role === "client") {
+              clients.push({
+                uid: child.key,
+                id: userData.id || child.key,
+                firstName: userData.firstName || "",
+                lastName: userData.lastName || "",
+                email: userData.email || "",
+              });
             }
           });
-          newId = maxId + 1;
+
+          // Check for existing active insurance for each client across ALL insurance types
+          const activeInsurance = new Set();
+
+          // Check GADDI
+          const gaddiSnapshot = await firebase
+            .database()
+            .ref("gaddi")
+            .once("value");
+          gaddiSnapshot.forEach((child) => {
+            const insuranceData = child.val();
+            if (
+              insuranceData &&
+              insuranceData.userId &&
+              (insuranceData.status === "Upcoming due" ||
+                insuranceData.status === "Renewed")
+            ) {
+              activeInsurance.add(insuranceData.userId);
+            }
+          });
+
+          // Check GADDI Plus
+          const gaddiPlusSnapshot = await firebase
+            .database()
+            .ref("gaddiPlus")
+            .once("value");
+          gaddiPlusSnapshot.forEach((child) => {
+            const insuranceData = child.val();
+            if (
+              insuranceData &&
+              insuranceData.userId &&
+              (insuranceData.status === "Upcoming due" ||
+                insuranceData.status === "Renewed")
+            ) {
+              activeInsurance.add(insuranceData.userId);
+            }
+          });
+
+          // Check GLAFI
+          const glafiSnapshot = await firebase
+            .database()
+            .ref("glafi")
+            .once("value");
+          glafiSnapshot.forEach((child) => {
+            const insuranceData = child.val();
+            if (
+              insuranceData &&
+              insuranceData.userId &&
+              (insuranceData.status === "Upcoming due" ||
+                insuranceData.status === "Renewed")
+            ) {
+              activeInsurance.add(insuranceData.userId);
+            }
+          });
+
+          // Add clients to dropdown, excluding those with active insurance
+          const availableClients = clients.filter(
+            (client) => !activeInsurance.has(client.uid)
+          );
+          availableClients.forEach((client) => {
+            clientSelect.innerHTML += `<option value='${client.uid}' data-firstname='${client.firstName}' data-lastname='${client.lastName}'>${client.id} - ${client.firstName} ${client.lastName}</option>`;
+          });
+
+          if (clients.length === 0) {
+            clientSelect.innerHTML =
+              '<option value="">No clients found</option>';
+          } else if (availableClients.length === 0) {
+            clientSelect.innerHTML =
+              '<option value="">All clients already have active insurance</option>';
+          }
         } catch (err) {
-          newId = 100001;
+          clientSelect.innerHTML =
+            '<option value="">Failed to load clients</option>';
+          console.error("Error loading clients:", err);
         }
-        document.getElementById("gaddiIdInput").value = newId;
+
+        // When a client is selected, prefill the form
+        clientSelect.onchange = function () {
+          const selectedOption = this.options[this.selectedIndex];
+          if (selectedOption.value) {
+            document.getElementById("gaddiFirstNameInput").value =
+              selectedOption.dataset.firstname || "";
+            document.getElementById("gaddiLastNameInput").value =
+              selectedOption.dataset.lastname || "";
+          } else {
+            document.getElementById("gaddiFirstNameInput").value = "";
+            document.getElementById("gaddiLastNameInput").value = "";
+          }
+        };
+
         // Option price logic
         const optionSelect = document.getElementById("gaddiOptionSelect");
         const amountInput = document.getElementById("gaddiAmountInput");
         optionSelect.onchange = function () {
           amountInput.value = this.value === "Option 1" ? 230 : 460;
         };
+
         // Wait for auth state to be ready before enabling form submission
         firebase.auth().onAuthStateChanged(function (user) {
           document.getElementById("addForm").onsubmit = async function (e) {
@@ -671,21 +769,49 @@ function openModal(type, btn) {
               );
               return;
             }
+
+            const clientId = document.getElementById(
+              "gaddiClientIdSelect"
+            ).value;
+            if (!clientId) {
+              showGaddiAddModal("Please select a client.", false);
+              return;
+            }
+
             const form = e.target;
-            const id = form.id.value;
             const firstName = form.firstName.value;
             const lastName = form.lastName.value;
             const product = form.product.value;
             const option = form.option.value;
             const amount = form.amount.value;
             const status = form.status.value;
+
+            // Generate new insurance ID
+            let newId = 100000;
+            try {
+              const snapshot = await firebase
+                .database()
+                .ref("gaddi")
+                .once("value");
+              let maxId = 100000;
+              snapshot.forEach((child) => {
+                if (/^\d+$/.test(child.key)) {
+                  const val = parseInt(child.key, 10);
+                  if (!isNaN(val) && val > maxId) maxId = val;
+                }
+              });
+              newId = maxId + 1;
+            } catch (err) {
+              newId = 100001;
+            }
+
             // Store in Firebase Realtime Database
             try {
               await firebase
                 .database()
-                .ref("gaddi/" + id)
+                .ref("gaddi/" + newId)
                 .set({
-                  id,
+                  id: newId,
                   firstName,
                   lastName,
                   product,
@@ -693,7 +819,7 @@ function openModal(type, btn) {
                   amount,
                   status,
                   createdAt: new Date().toISOString(),
-                  userId: user.uid,
+                  userId: clientId,
                 });
               closeModal();
               showGaddiAddModal("GADDI entry added successfully!", true);
@@ -710,9 +836,13 @@ function openModal(type, btn) {
       // GADDI Plus-specific form
       title.textContent = `Add Entry - ${sectionTitle}`;
       body.innerHTML = `<form id='addForm'>
-        <label>ID No.: <input type='text' name='id' id='gaddiPlusIdInput' readonly></label>
-        <label>First Name: <input type='text' name='firstName' id='gaddiPlusFirstNameInput' required></label>
-        <label>Last Name: <input type='text' name='lastName' id='gaddiPlusLastNameInput' required></label>
+        <label>Select Client ID:
+          <select name='clientId' id='gaddiPlusClientIdSelect' required>
+            <option value=''>Loading clients...</option>
+          </select>
+        </label>
+        <label>First Name: <input type='text' name='firstName' id='gaddiPlusFirstNameInput' readonly required></label>
+        <label>Last Name: <input type='text' name='lastName' id='gaddiPlusLastNameInput' readonly required></label>
         <label>Product Name: <input type='text' name='product' value='GADDI PLUS' readonly></label>
         <label>Option #:
           <select name='option' id='gaddiPlusOptionSelect'>
@@ -727,24 +857,120 @@ function openModal(type, btn) {
         <button type='submit'>Add</button>
       </form>`;
       setTimeout(async () => {
-        let newId = 200000;
+        // Populate client dropdown
+        const clientSelect = document.getElementById("gaddiPlusClientIdSelect");
+        clientSelect.innerHTML = '<option value="">Select Client</option>';
+
         try {
-          const snapshot = await firebase
+          // Fetch all clients from users collection
+          const usersSnapshot = await firebase
+            .database()
+            .ref("users")
+            .once("value");
+          const clients = [];
+
+          usersSnapshot.forEach((child) => {
+            const userData = child.val();
+            if (userData && userData.role === "client") {
+              clients.push({
+                uid: child.key,
+                id: userData.id || child.key,
+                firstName: userData.firstName || "",
+                lastName: userData.lastName || "",
+                email: userData.email || "",
+              });
+            }
+          });
+
+          // Check for existing active insurance for each client across ALL insurance types
+          const activeInsurance = new Set();
+
+          // Check GADDI
+          const gaddiSnapshot = await firebase
+            .database()
+            .ref("gaddi")
+            .once("value");
+          gaddiSnapshot.forEach((child) => {
+            const insuranceData = child.val();
+            if (
+              insuranceData &&
+              insuranceData.userId &&
+              (insuranceData.status === "Upcoming due" ||
+                insuranceData.status === "Renewed")
+            ) {
+              activeInsurance.add(insuranceData.userId);
+            }
+          });
+
+          // Check GADDI Plus
+          const gaddiPlusSnapshot = await firebase
             .database()
             .ref("gaddiPlus")
             .once("value");
-          let maxId = 200000;
-          snapshot.forEach((child) => {
-            if (/^\d+$/.test(child.key)) {
-              const val = parseInt(child.key, 10);
-              if (!isNaN(val) && val > maxId) maxId = val;
+          gaddiPlusSnapshot.forEach((child) => {
+            const insuranceData = child.val();
+            if (
+              insuranceData &&
+              insuranceData.userId &&
+              (insuranceData.status === "Upcoming due" ||
+                insuranceData.status === "Renewed")
+            ) {
+              activeInsurance.add(insuranceData.userId);
             }
           });
-          newId = maxId + 1;
+
+          // Check GLAFI
+          const glafiSnapshot = await firebase
+            .database()
+            .ref("glafi")
+            .once("value");
+          glafiSnapshot.forEach((child) => {
+            const insuranceData = child.val();
+            if (
+              insuranceData &&
+              insuranceData.userId &&
+              (insuranceData.status === "Upcoming due" ||
+                insuranceData.status === "Renewed")
+            ) {
+              activeInsurance.add(insuranceData.userId);
+            }
+          });
+
+          // Add clients to dropdown, excluding those with active insurance
+          const availableClients = clients.filter(
+            (client) => !activeInsurance.has(client.uid)
+          );
+          availableClients.forEach((client) => {
+            clientSelect.innerHTML += `<option value='${client.uid}' data-firstname='${client.firstName}' data-lastname='${client.lastName}'>${client.id} - ${client.firstName} ${client.lastName}</option>`;
+          });
+
+          if (clients.length === 0) {
+            clientSelect.innerHTML =
+              '<option value="">No clients found</option>';
+          } else if (availableClients.length === 0) {
+            clientSelect.innerHTML =
+              '<option value="">All clients already have active insurance</option>';
+          }
         } catch (err) {
-          newId = 200001;
+          clientSelect.innerHTML =
+            '<option value="">Failed to load clients</option>';
+          console.error("Error loading clients:", err);
         }
-        document.getElementById("gaddiPlusIdInput").value = newId;
+
+        // When a client is selected, prefill the form
+        clientSelect.onchange = function () {
+          const selectedOption = this.options[this.selectedIndex];
+          if (selectedOption.value) {
+            document.getElementById("gaddiPlusFirstNameInput").value =
+              selectedOption.dataset.firstname || "";
+            document.getElementById("gaddiPlusLastNameInput").value =
+              selectedOption.dataset.lastname || "";
+          } else {
+            document.getElementById("gaddiPlusFirstNameInput").value = "";
+            document.getElementById("gaddiPlusLastNameInput").value = "";
+          }
+        };
+
         // Option price logic for GADDI Plus
         const optionSelect = document.getElementById("gaddiPlusOptionSelect");
         const amountInput = document.getElementById("gaddiPlusAmountInput");
@@ -754,6 +980,7 @@ function openModal(type, btn) {
           else if (this.value === "Option 3") amountInput.value = 800;
           else if (this.value === "Option 4") amountInput.value = 1000;
         };
+
         // Wait for auth state to be ready before enabling form submission
         firebase.auth().onAuthStateChanged(function (user) {
           document.getElementById("addForm").onsubmit = async function (e) {
@@ -765,21 +992,49 @@ function openModal(type, btn) {
               );
               return;
             }
+
+            const clientId = document.getElementById(
+              "gaddiPlusClientIdSelect"
+            ).value;
+            if (!clientId) {
+              showGaddiAddModal("Please select a client.", false);
+              return;
+            }
+
             const form = e.target;
-            const id = form.id.value;
             const firstName = form.firstName.value;
             const lastName = form.lastName.value;
             const product = form.product.value;
             const option = form.option.value;
             const amount = form.amount.value;
             const status = form.status.value;
+
+            // Generate new insurance ID
+            let newId = 200000;
+            try {
+              const snapshot = await firebase
+                .database()
+                .ref("gaddiPlus")
+                .once("value");
+              let maxId = 200000;
+              snapshot.forEach((child) => {
+                if (/^\d+$/.test(child.key)) {
+                  const val = parseInt(child.key, 10);
+                  if (!isNaN(val) && val > maxId) maxId = val;
+                }
+              });
+              newId = maxId + 1;
+            } catch (err) {
+              newId = 200001;
+            }
+
             // Store in Firebase Realtime Database
             try {
               await firebase
                 .database()
-                .ref("gaddiPlus/" + id)
+                .ref("gaddiPlus/" + newId)
                 .set({
-                  id,
+                  id: newId,
                   firstName,
                   lastName,
                   product,
@@ -787,7 +1042,7 @@ function openModal(type, btn) {
                   amount,
                   status,
                   createdAt: new Date().toISOString(),
-                  userId: user.uid,
+                  userId: clientId,
                 });
               closeModal();
               showGaddiAddModal("GADDI Plus entry added successfully!", true);
@@ -804,9 +1059,13 @@ function openModal(type, btn) {
       // GLAFI-specific form
       title.textContent = `Add Entry - ${sectionTitle}`;
       body.innerHTML = `<form id='addForm'>
-        <label>ID No.: <input type='text' name='id' id='glafiIdInput' readonly></label>
-        <label>First Name: <input type='text' name='firstName' id='glafiFirstNameInput' required></label>
-        <label>Last Name: <input type='text' name='lastName' id='glafiLastNameInput' required></label>
+        <label>Select Client ID:
+          <select name='clientId' id='glafiClientIdSelect' required>
+            <option value=''>Loading clients...</option>
+          </select>
+        </label>
+        <label>First Name: <input type='text' name='firstName' id='glafiFirstNameInput' readonly required></label>
+        <label>Last Name: <input type='text' name='lastName' id='glafiLastNameInput' readonly required></label>
         <label>Product Name: <input type='text' name='product' value='GLAFI' readonly></label>
         <label>Option #:
           <select name='option' id='glafiOptionSelect'>
@@ -818,27 +1077,127 @@ function openModal(type, btn) {
         <button type='submit'>Add</button>
       </form>`;
       setTimeout(async () => {
-        let newId = 300000;
+        // Populate client dropdown
+        const clientSelect = document.getElementById("glafiClientIdSelect");
+        clientSelect.innerHTML = '<option value="">Select Client</option>';
+
         try {
-          const snapshot = await firebase.database().ref("glafi").once("value");
-          let maxId = 300000;
-          snapshot.forEach((child) => {
-            if (/^\d+$/.test(child.key)) {
-              const val = parseInt(child.key, 10);
-              if (!isNaN(val) && val > maxId) maxId = val;
+          // Fetch all clients from users collection
+          const usersSnapshot = await firebase
+            .database()
+            .ref("users")
+            .once("value");
+          const clients = [];
+
+          usersSnapshot.forEach((child) => {
+            const userData = child.val();
+            if (userData && userData.role === "client") {
+              clients.push({
+                uid: child.key,
+                id: userData.id || child.key,
+                firstName: userData.firstName || "",
+                lastName: userData.lastName || "",
+                email: userData.email || "",
+              });
             }
           });
-          newId = maxId + 1;
+
+          // Check for existing active insurance for each client across ALL insurance types
+          const activeInsurance = new Set();
+
+          // Check GADDI
+          const gaddiSnapshot = await firebase
+            .database()
+            .ref("gaddi")
+            .once("value");
+          gaddiSnapshot.forEach((child) => {
+            const insuranceData = child.val();
+            if (
+              insuranceData &&
+              insuranceData.userId &&
+              (insuranceData.status === "Upcoming due" ||
+                insuranceData.status === "Renewed")
+            ) {
+              activeInsurance.add(insuranceData.userId);
+            }
+          });
+
+          // Check GADDI Plus
+          const gaddiPlusSnapshot = await firebase
+            .database()
+            .ref("gaddiPlus")
+            .once("value");
+          gaddiPlusSnapshot.forEach((child) => {
+            const insuranceData = child.val();
+            if (
+              insuranceData &&
+              insuranceData.userId &&
+              (insuranceData.status === "Upcoming due" ||
+                insuranceData.status === "Renewed")
+            ) {
+              activeInsurance.add(insuranceData.userId);
+            }
+          });
+
+          // Check GLAFI
+          const glafiSnapshot = await firebase
+            .database()
+            .ref("glafi")
+            .once("value");
+          glafiSnapshot.forEach((child) => {
+            const insuranceData = child.val();
+            if (
+              insuranceData &&
+              insuranceData.userId &&
+              (insuranceData.status === "Upcoming due" ||
+                insuranceData.status === "Renewed")
+            ) {
+              activeInsurance.add(insuranceData.userId);
+            }
+          });
+
+          // Add clients to dropdown, excluding those with active insurance
+          const availableClients = clients.filter(
+            (client) => !activeInsurance.has(client.uid)
+          );
+          availableClients.forEach((client) => {
+            clientSelect.innerHTML += `<option value='${client.uid}' data-firstname='${client.firstName}' data-lastname='${client.lastName}'>${client.id} - ${client.firstName} ${client.lastName}</option>`;
+          });
+
+          if (clients.length === 0) {
+            clientSelect.innerHTML =
+              '<option value="">No clients found</option>';
+          } else if (availableClients.length === 0) {
+            clientSelect.innerHTML =
+              '<option value="">All clients already have active insurance</option>';
+          }
         } catch (err) {
-          newId = 300001;
+          clientSelect.innerHTML =
+            '<option value="">Failed to load clients</option>';
+          console.error("Error loading clients:", err);
         }
-        document.getElementById("glafiIdInput").value = newId;
+
+        // When a client is selected, prefill the form
+        clientSelect.onchange = function () {
+          const selectedOption = this.options[this.selectedIndex];
+          if (selectedOption.value) {
+            document.getElementById("glafiFirstNameInput").value =
+              selectedOption.dataset.firstname || "";
+            document.getElementById("glafiLastNameInput").value =
+              selectedOption.dataset.lastname || "";
+          } else {
+            document.getElementById("glafiFirstNameInput").value = "";
+            document.getElementById("glafiLastNameInput").value = "";
+          }
+        };
+
         // Option price logic for GLAFI
         const optionSelect = document.getElementById("glafiOptionSelect");
         const amountInput = document.getElementById("glafiAmountInput");
         optionSelect.onchange = function () {
           if (this.value === "Option 1") amountInput.value = 500;
         };
+
         // Wait for auth state to be ready before enabling form submission
         firebase.auth().onAuthStateChanged(function (user) {
           document.getElementById("addForm").onsubmit = async function (e) {
@@ -850,21 +1209,49 @@ function openModal(type, btn) {
               );
               return;
             }
+
+            const clientId = document.getElementById(
+              "glafiClientIdSelect"
+            ).value;
+            if (!clientId) {
+              showGaddiAddModal("Please select a client.", false);
+              return;
+            }
+
             const form = e.target;
-            const id = form.id.value;
             const firstName = form.firstName.value;
             const lastName = form.lastName.value;
             const product = form.product.value;
             const option = form.option.value;
             const amount = form.amount.value;
             const status = form.status.value;
+
+            // Generate new insurance ID
+            let newId = 300000;
+            try {
+              const snapshot = await firebase
+                .database()
+                .ref("glafi")
+                .once("value");
+              let maxId = 300000;
+              snapshot.forEach((child) => {
+                if (/^\d+$/.test(child.key)) {
+                  const val = parseInt(child.key, 10);
+                  if (!isNaN(val) && val > maxId) maxId = val;
+                }
+              });
+              newId = maxId + 1;
+            } catch (err) {
+              newId = 300001;
+            }
+
             // Store in Firebase Realtime Database
             try {
               await firebase
                 .database()
-                .ref("glafi/" + id)
+                .ref("glafi/" + newId)
                 .set({
-                  id,
+                  id: newId,
                   firstName,
                   lastName,
                   product,
@@ -872,7 +1259,7 @@ function openModal(type, btn) {
                   amount,
                   status,
                   createdAt: new Date().toISOString(),
-                  userId: user.uid,
+                  userId: clientId,
                 });
               closeModal();
               showGaddiAddModal("GLAFI entry added successfully!", true);
