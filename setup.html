@@ -12,6 +12,10 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
   </head>
   <body>
     <div class="outer-box">
@@ -43,12 +47,26 @@
 
         <div class="form-group">
           <label>Phone Number</label>
-          <input
-            type="tel"
-            placeholder="Enter your phone number"
-            name="phone"
-            id="phone"
-          />
+          <div style="position: relative; display: flex; align-items: center">
+            <span
+              style="
+                position: absolute;
+                left: 12px;
+                color: #666;
+                font-weight: bold;
+                z-index: 1;
+              "
+              >+63</span
+            >
+            <input
+              type="tel"
+              placeholder="912 345 6789"
+              name="phone"
+              id="phone"
+              maxlength="13"
+              style="padding-left: 45px"
+            />
+          </div>
         </div>
 
         <div class="form-group">
