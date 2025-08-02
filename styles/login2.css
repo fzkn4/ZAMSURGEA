@@ -1,6 +1,6 @@
 * {
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 body {
@@ -89,6 +89,19 @@ label {
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.input-field:hover {
+  border-color: #2b66a7;
+  box-shadow: 0 0 5px rgba(43, 102, 167, 0.2);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #2b66a7;
+  box-shadow: 0 0 8px rgba(43, 102, 167, 0.3);
+  transform: translateY(-1px);
 }
 
 .password-wrapper {
@@ -102,6 +115,11 @@ label {
   transform: translateY(-50%);
   cursor: pointer;
   color: #666;
+  transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+  color: #2b66a7;
 }
 
 button {
@@ -112,6 +130,7 @@ button {
   border-radius: 10px;
   font-size: 14px;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .login-btn {
@@ -119,10 +138,31 @@ button {
   color: white;
 }
 
+.login-btn:hover:not(:disabled) {
+  background-color: #1e4a7a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(43, 102, 167, 0.3);
+}
+
+.login-btn:focus:not(:disabled) {
+  background-color: #1e4a7a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(43, 102, 167, 0.3);
+  outline: 2px solid #2b66a7;
+  outline-offset: 2px;
+}
+
+.login-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(43, 102, 167, 0.3);
+}
+
 .login-btn:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
   opacity: 0.7;
+  transform: none;
+  box-shadow: none;
 }
 
 .login-btn i {
@@ -133,6 +173,29 @@ button {
   background-color: white;
   color: black;
   border: 1px solid #ccc;
+}
+
+.signup-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #2b66a7;
+  color: #2b66a7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.signup-btn:focus {
+  background-color: #f8f9fa;
+  border-color: #2b66a7;
+  color: #2b66a7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  outline: 2px solid #2b66a7;
+  outline-offset: 2px;
+}
+
+.signup-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .divider {
