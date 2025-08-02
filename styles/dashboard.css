@@ -1496,6 +1496,50 @@ notification-section {
   flex-direction: column;
   gap: 0;
 }
+
+/* Dynamic notification types */
+.notification-item.transaction {
+  border-left: 4px solid #2196f3;
+}
+
+.notification-item.renewal {
+  border-left: 4px solid #66bb6a;
+}
+
+.notification-item.payment {
+  border-left: 4px solid #4caf50;
+}
+
+.notification-item.overdue {
+  border-left: 4px solid #ef5350;
+}
+
+.status-badge.status-transaction {
+  background: #2196f3;
+  color: white;
+}
+
+.status-badge.status-renewal {
+  background: #66bb6a;
+  color: white;
+}
+
+.status-badge.status-payment {
+  background: #4caf50;
+  color: white;
+}
+
+.status-badge.status-overdue {
+  background: #ef5350;
+  color: white;
+}
+
+.notification-item.no-notifications {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  border-left: none;
+}
 .notification-header {
   display: flex;
   justify-content: space-between;
@@ -1570,6 +1614,49 @@ notification-section {
 }
 .notification-item.overdue {
   border-left: 6px solid #ef5350;
+}
+
+/* Read/Unread Notification States */
+.notification-item.unread {
+  background: #f8fafc;
+  border-left: 6px solid #2f619e;
+  box-shadow: 0 4px 12px rgba(47, 97, 158, 0.1);
+}
+
+.notification-item.read {
+  background: #fff;
+  opacity: 0.8;
+  border-left: 6px solid #e0e7ef;
+}
+
+.notification-item.unread:hover {
+  background: #f3f7fb;
+  box-shadow: 0 6px 24px rgba(47, 97, 158, 0.15);
+}
+
+.notification-item.read:hover {
+  background: #fafbfc;
+  opacity: 1;
+}
+
+/* Unread Indicator */
+.unread-indicator {
+  color: #2f619e;
+  font-size: 1.2rem;
+  margin-left: 8px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 /* Avatar/Icon */

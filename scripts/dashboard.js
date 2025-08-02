@@ -37,6 +37,22 @@ window.onclick = function (event) {
 };
 
 function logout() {
+  // Clean up notification listeners
+  if (notificationsListener) {
+    firebase
+      .database()
+      .ref("notifications")
+      .off("value", notificationsListener);
+    notificationsListener = null;
+  }
+
+  // Clean up transaction listeners
+  transactionListeners.forEach((listener) => {
+    firebase.database().ref("transactions").off("child_added", listener);
+    firebase.database().ref("transactions").off("child_changed", listener);
+  });
+  transactionListeners = [];
+
   // Optionally clear session or local storage here
   // sessionStorage.clear(); localStorage.clear();
   window.location.href = "login2.html";
@@ -560,45 +576,8 @@ function populateTable(period) {
 }
 
 // Notification functionality
-function deleteNotification(id) {
-  const notification = document.querySelector(
-    `.notification-item[data-id="${id}"]`
-  );
-  if (notification) {
-    notification.style.opacity = "0";
-    setTimeout(() => {
-      notification.remove();
-      updateNotificationCount();
-    }, 300);
-  }
-}
-
-function deleteSelectedNotifications() {
-  const checkboxes = document.querySelectorAll(
-    ".notification-checkbox:checked"
-  );
-  checkboxes.forEach((checkbox) => {
-    const notification = checkbox.closest(".notification-item");
-    if (notification) {
-      const id = notification.getAttribute("data-id");
-      deleteNotification(id);
-    }
-  });
-}
-
-function markAllAsRead() {
-  document.querySelectorAll(".notification-checkbox").forEach((checkbox) => {
-    checkbox.checked = true;
-  });
-}
-
-function updateNotificationCount() {
-  const count = document.querySelectorAll(".notification-item").length;
-  document.querySelector(".badge").textContent = count;
-  // Update sidebar notification bubble
-  const sidebarBadge = document.querySelector(".sidebar-badge");
-  if (sidebarBadge) sidebarBadge.textContent = count;
-}
+// These functions are now handled by the dynamic notification system above
+// The old static functions have been replaced with async Firebase-based functions
 
 // Modal logic for Add, Update, Print (GADDI, GADDI Plus, GLAFI)
 function openModal(type, btn) {
@@ -807,20 +786,58 @@ function openModal(type, btn) {
 
             // Store in Firebase Realtime Database
             try {
-              await firebase
+              // Create transaction entry
+              const transaction = {
+                id: newId,
+                firstName: firstName,
+                lastName: lastName,
+                product: product,
+                option: option,
+                amount: amount,
+                date: new Date().toISOString(),
+                userId: clientId,
+                status: status,
+                createdAt: new Date().toISOString(),
+              };
+
+              // Create notification for the new transaction
+              const notificationId = firebase
                 .database()
-                .ref("gaddi/" + newId)
-                .set({
-                  id: newId,
-                  firstName,
-                  lastName,
-                  product,
-                  option,
-                  amount,
-                  status,
-                  createdAt: new Date().toISOString(),
-                  userId: clientId,
-                });
+                .ref("notifications")
+                .push().key;
+              const notification = {
+                id: notificationId,
+                type: "transaction",
+                title: `New ${product} Transaction`,
+                message: `${firstName} ${lastName} has applied for ${product} - ${option} (₱${amount})`,
+                transactionId: newId,
+                userId: clientId,
+                product: product,
+                amount: amount,
+                date: new Date().toISOString(),
+                isRead: false,
+                deleted: false,
+                forAdmins: true,
+                forClient: true,
+              };
+
+              // Use atomic update to write to gaddi, transactions, and notifications
+              const updates = {};
+              updates["gaddi/" + newId] = {
+                id: newId,
+                firstName,
+                lastName,
+                product,
+                option,
+                amount,
+                status,
+                createdAt: new Date().toISOString(),
+                userId: clientId,
+              };
+              updates["transactions/" + newId] = transaction;
+              updates["notifications/" + notificationId] = notification;
+
+              await firebase.database().ref().update(updates);
               closeModal();
               showGaddiAddModal("GADDI entry added successfully!", true);
             } catch (err) {
@@ -1030,20 +1047,58 @@ function openModal(type, btn) {
 
             // Store in Firebase Realtime Database
             try {
-              await firebase
+              // Create transaction entry
+              const transaction = {
+                id: newId,
+                firstName: firstName,
+                lastName: lastName,
+                product: product,
+                option: option,
+                amount: amount,
+                date: new Date().toISOString(),
+                userId: clientId,
+                status: status,
+                createdAt: new Date().toISOString(),
+              };
+
+              // Create notification for the new transaction
+              const notificationId = firebase
                 .database()
-                .ref("gaddiPlus/" + newId)
-                .set({
-                  id: newId,
-                  firstName,
-                  lastName,
-                  product,
-                  option,
-                  amount,
-                  status,
-                  createdAt: new Date().toISOString(),
-                  userId: clientId,
-                });
+                .ref("notifications")
+                .push().key;
+              const notification = {
+                id: notificationId,
+                type: "transaction",
+                title: `New ${product} Transaction`,
+                message: `${firstName} ${lastName} has applied for ${product} - ${option} (₱${amount})`,
+                transactionId: newId,
+                userId: clientId,
+                product: product,
+                amount: amount,
+                date: new Date().toISOString(),
+                isRead: false,
+                deleted: false,
+                forAdmins: true,
+                forClient: true,
+              };
+
+              // Use atomic update to write to gaddiPlus, transactions, and notifications
+              const updates = {};
+              updates["gaddiPlus/" + newId] = {
+                id: newId,
+                firstName,
+                lastName,
+                product,
+                option,
+                amount,
+                status,
+                createdAt: new Date().toISOString(),
+                userId: clientId,
+              };
+              updates["transactions/" + newId] = transaction;
+              updates["notifications/" + notificationId] = notification;
+
+              await firebase.database().ref().update(updates);
               closeModal();
               showGaddiAddModal("GADDI Plus entry added successfully!", true);
             } catch (err) {
@@ -1247,20 +1302,58 @@ function openModal(type, btn) {
 
             // Store in Firebase Realtime Database
             try {
-              await firebase
+              // Create transaction entry
+              const transaction = {
+                id: newId,
+                firstName: firstName,
+                lastName: lastName,
+                product: product,
+                option: option,
+                amount: amount,
+                date: new Date().toISOString(),
+                userId: clientId,
+                status: status,
+                createdAt: new Date().toISOString(),
+              };
+
+              // Create notification for the new transaction
+              const notificationId = firebase
                 .database()
-                .ref("glafi/" + newId)
-                .set({
-                  id: newId,
-                  firstName,
-                  lastName,
-                  product,
-                  option,
-                  amount,
-                  status,
-                  createdAt: new Date().toISOString(),
-                  userId: clientId,
-                });
+                .ref("notifications")
+                .push().key;
+              const notification = {
+                id: notificationId,
+                type: "transaction",
+                title: `New ${product} Transaction`,
+                message: `${firstName} ${lastName} has applied for ${product} - ${option} (₱${amount})`,
+                transactionId: newId,
+                userId: clientId,
+                product: product,
+                amount: amount,
+                date: new Date().toISOString(),
+                isRead: false,
+                deleted: false,
+                forAdmins: true,
+                forClient: true,
+              };
+
+              // Use atomic update to write to glafi, transactions, and notifications
+              const updates = {};
+              updates["glafi/" + newId] = {
+                id: newId,
+                firstName,
+                lastName,
+                product,
+                option,
+                amount,
+                status,
+                createdAt: new Date().toISOString(),
+                userId: clientId,
+              };
+              updates["transactions/" + newId] = transaction;
+              updates["notifications/" + notificationId] = notification;
+
+              await firebase.database().ref().update(updates);
               closeModal();
               showGaddiAddModal("GLAFI entry added successfully!", true);
             } catch (err) {
@@ -3336,41 +3429,163 @@ function fetchAndDisplayAllTransactions() {
   }
   transactionsListener = function (snapshot) {
     let all = [];
+    let promises = [];
+
     snapshot.forEach((child) => {
       const d = child.val();
-      if (
-        d &&
-        d.id &&
-        d.firstName !== undefined &&
-        d.lastName !== undefined &&
-        d.product &&
-        d.option &&
-        d.amount &&
-        d.date
-      ) {
-        all.push({
-          id: d.id,
-          lastName: d.lastName,
-          firstName: d.firstName,
-          product: d.product,
-          option: d.option,
-          payment: d.amount,
-          date: d.date ? d.date.split("T")[0] : "",
-        });
+      if (d) {
+        // Handle both old and new transaction data structures
+        let transactionData = {};
+
+        // ID - use child key if no id field exists
+        transactionData.id = d.id || child.key;
+
+        // Name fields - try new structure first, then old structure
+        if (d.firstName !== undefined && d.lastName !== undefined) {
+          // New structure
+          transactionData.firstName = d.firstName;
+          transactionData.lastName = d.lastName;
+          transactionData.product =
+            d.product || d.insuranceProduct || "Unknown";
+          transactionData.option = d.option || d.optionNo || "Unknown";
+          transactionData.payment = d.amount || d.depositAmount || "0";
+
+          // Date field
+          if (d.date) {
+            transactionData.date = d.date.split("T")[0];
+          } else if (d.createdAt) {
+            transactionData.date = d.createdAt.split("T")[0];
+          } else if (d.effectivity) {
+            transactionData.date = d.effectivity;
+          } else {
+            transactionData.date = "Unknown";
+          }
+
+          // Only add if we have the minimum required data
+          if (
+            transactionData.id &&
+            transactionData.product &&
+            transactionData.option &&
+            transactionData.payment
+          ) {
+            all.push(transactionData);
+          }
+        } else if (d.userId) {
+          // Old structure - fetch user data to get names
+          const promise = firebase
+            .database()
+            .ref("users/" + d.userId)
+            .once("value")
+            .then((userSnap) => {
+              const userData = userSnap.val();
+              if (userData) {
+                transactionData.firstName = userData.firstName || "Client";
+                transactionData.lastName = userData.lastName || "User";
+              } else {
+                transactionData.firstName = "Client";
+                transactionData.lastName = d.userId.substring(0, 8);
+              }
+
+              transactionData.product =
+                d.product || d.insuranceProduct || "Unknown";
+              transactionData.option = d.option || d.optionNo || "Unknown";
+              transactionData.payment = d.amount || d.depositAmount || "0";
+
+              // Date field
+              if (d.date) {
+                transactionData.date = d.date.split("T")[0];
+              } else if (d.createdAt) {
+                transactionData.date = d.createdAt.split("T")[0];
+              } else if (d.effectivity) {
+                transactionData.date = d.effectivity;
+              } else {
+                transactionData.date = "Unknown";
+              }
+
+              // Only add if we have the minimum required data
+              if (
+                transactionData.id &&
+                transactionData.product &&
+                transactionData.option &&
+                transactionData.payment
+              ) {
+                all.push(transactionData);
+              }
+            })
+            .catch(() => {
+              // Fallback if user fetch fails
+              transactionData.firstName = "Client";
+              transactionData.lastName = d.userId.substring(0, 8);
+              transactionData.product =
+                d.product || d.insuranceProduct || "Unknown";
+              transactionData.option = d.option || d.optionNo || "Unknown";
+              transactionData.payment = d.amount || d.depositAmount || "0";
+
+              if (d.date) {
+                transactionData.date = d.date.split("T")[0];
+              } else if (d.createdAt) {
+                transactionData.date = d.createdAt.split("T")[0];
+              } else if (d.effectivity) {
+                transactionData.date = d.effectivity;
+              } else {
+                transactionData.date = "Unknown";
+              }
+
+              if (
+                transactionData.id &&
+                transactionData.product &&
+                transactionData.option &&
+                transactionData.payment
+              ) {
+                all.push(transactionData);
+              }
+            });
+          promises.push(promise);
+        } else {
+          transactionData.firstName = "Unknown";
+          transactionData.lastName = "User";
+          transactionData.product =
+            d.product || d.insuranceProduct || "Unknown";
+          transactionData.option = d.option || d.optionNo || "Unknown";
+          transactionData.payment = d.amount || d.depositAmount || "0";
+
+          if (d.date) {
+            transactionData.date = d.date.split("T")[0];
+          } else if (d.createdAt) {
+            transactionData.date = d.createdAt.split("T")[0];
+          } else if (d.effectivity) {
+            transactionData.date = d.effectivity;
+          } else {
+            transactionData.date = "Unknown";
+          }
+
+          if (
+            transactionData.id &&
+            transactionData.product &&
+            transactionData.option &&
+            transactionData.payment
+          ) {
+            all.push(transactionData);
+          }
+        }
       }
     });
-    // Sort by date descending
-    all.sort((a, b) => (a.date < b.date ? 1 : -1));
-    tbody.innerHTML = "";
-    if (all.length === 0) {
-      tbody.innerHTML =
-        '<tr><td colspan="7" style="text-align:center; color:#888; padding:20px;">No transactions found</td></tr>';
-      return;
-    }
-    all.forEach((item) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${item.id}</td><td>${item.lastName}</td><td>${item.firstName}</td><td>${item.product}</td><td>${item.option}</td><td>₱${item.payment}</td><td>${item.date}</td>`;
-      tbody.appendChild(tr);
+
+    // Wait for all user data fetches to complete, then render
+    Promise.all(promises).then(() => {
+      // Sort by date descending
+      all.sort((a, b) => (a.date < b.date ? 1 : -1));
+      tbody.innerHTML = "";
+      if (all.length === 0) {
+        tbody.innerHTML =
+          '<tr><td colspan="7" style="text-align:center; color:#888; padding:20px;">No transactions found</td></tr>';
+        return;
+      }
+      all.forEach((item) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${item.id}</td><td>${item.lastName}</td><td>${item.firstName}</td><td>${item.product}</td><td>${item.option}</td><td>₱${item.payment}</td><td>${item.date}</td>`;
+        tbody.appendChild(tr);
+      });
     });
   };
   firebase.database().ref("transactions").on("value", transactionsListener);
@@ -3406,27 +3621,32 @@ function updateCollectionChartsWithTransactions() {
       transactionsPerMonth = Array(12).fill(0);
       snapshot.forEach((child) => {
         const d = child.val();
-        if (d && d.amount && d.date) {
-          // Parse date
-          let dateObj = null;
-          if (d.date.includes("T")) {
-            dateObj = new Date(d.date);
-          } else {
-            // Fallback: try parsing as yyyy-mm-dd
-            dateObj = new Date(d.date + "T00:00:00");
-          }
-          if (!isNaN(dateObj)) {
-            const monthIdx = dateObj.getMonth();
-            // Parse amount (remove ₱ and commas if present)
-            let amt = d.amount;
-            if (typeof amt === "string") {
-              amt = amt.replace(/[^\d.]/g, "");
-              amt = parseFloat(amt);
+        if (d) {
+          // Handle both old and new transaction data structures
+          let amount = d.amount || d.depositAmount;
+          let dateStr = d.date || d.createdAt || d.effectivity;
+
+          if (amount && dateStr) {
+            // Parse date
+            let dateObj = null;
+            if (dateStr.includes("T")) {
+              dateObj = new Date(dateStr);
+            } else {
+              // Fallback: try parsing as yyyy-mm-dd
+              dateObj = new Date(dateStr + "T00:00:00");
             }
-            if (!isNaN(amt)) {
-              revenuePerMonth[monthIdx] += amt;
+            if (!isNaN(dateObj)) {
+              const monthIdx = dateObj.getMonth();
+              // Parse amount (remove ₱ and commas if present)
+              if (typeof amount === "string") {
+                amount = amount.replace(/[^\d.]/g, "");
+                amount = parseFloat(amount);
+              }
+              if (!isNaN(amount)) {
+                revenuePerMonth[monthIdx] += amount;
+              }
+              transactionsPerMonth[monthIdx]++;
             }
-            transactionsPerMonth[monthIdx]++;
           }
         }
       });
@@ -3482,7 +3702,456 @@ async function updateDashboardUserName() {
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     updateDashboardUserName();
-    // ... (other logic can remain here)
+    // Clean up any existing duplicate notifications first
+    cleanupDuplicateNotifications().then(() => {
+      // Initialize dynamic notification system
+      loadNotifications();
+      setupTransactionNotificationListeners();
+    });
   }
 });
+
+// Clean up listeners when page is unloaded
+window.addEventListener("beforeunload", function () {
+  // Clean up notification listeners
+  if (notificationsListener) {
+    firebase
+      .database()
+      .ref("notifications")
+      .off("value", notificationsListener);
+    notificationsListener = null;
+  }
+
+  // Clean up transaction listeners
+  transactionListeners.forEach((listener) => {
+    firebase.database().ref("transactions").off("child_added", listener);
+    firebase.database().ref("transactions").off("child_changed", listener);
+  });
+  transactionListeners = [];
+});
 // ... existing code ...
+
+// Dynamic Notification System
+let currentUserRole = null;
+let currentUserId = null;
+let notificationsListener = null; // Store listener reference for cleanup
+let transactionListeners = []; // Store transaction listener references for cleanup
+
+// Function to create a notification
+async function createNotification(transactionData, type = "transaction") {
+  // For transaction type notifications, check if one already exists for this transactionId
+  if (type === "transaction") {
+    const existingNotificationSnapshot = await firebase
+      .database()
+      .ref("notifications")
+      .orderByChild("transactionId")
+      .equalTo(transactionData.id)
+      .once("value");
+
+    // If a transaction notification already exists for this transactionId, don't create another one
+    if (existingNotificationSnapshot.exists()) {
+      console.log(
+        `Transaction notification already exists for transactionId: ${transactionData.id}`
+      );
+      return;
+    }
+  } else {
+    // For status change notifications (overdue, renewal), check if one already exists for this transactionId AND type
+    const existingNotificationSnapshot = await firebase
+      .database()
+      .ref("notifications")
+      .orderByChild("transactionId")
+      .equalTo(transactionData.id)
+      .once("value");
+
+    // Check if a notification of the same type already exists for this transactionId
+    let typeExists = false;
+    existingNotificationSnapshot.forEach((child) => {
+      const notification = child.val();
+      if (notification && notification.type === type && !notification.deleted) {
+        typeExists = true;
+      }
+    });
+
+    if (typeExists) {
+      console.log(
+        `${type} notification already exists for transactionId: ${transactionData.id}`
+      );
+      return;
+    }
+  }
+
+  const notificationId = firebase.database().ref("notifications").push().key;
+  const notification = {
+    id: notificationId,
+    type: type,
+    title: getNotificationTitle(type, transactionData),
+    message: getNotificationMessage(type, transactionData),
+    transactionId: transactionData.id,
+    userId: transactionData.userId,
+    product: transactionData.product,
+    amount: transactionData.amount,
+    date: new Date().toISOString(),
+    isRead: false,
+    deleted: false, // Track deletion status
+    forAdmins: true, // All admins should see all transactions
+    forClient: true, // Client should see their own transactions
+  };
+
+  await firebase
+    .database()
+    .ref(`notifications/${notificationId}`)
+    .set(notification);
+}
+
+// Function to get notification title based on type
+function getNotificationTitle(type, transactionData) {
+  switch (type) {
+    case "transaction":
+      return `New ${transactionData.product} Transaction`;
+    case "renewal":
+      return "Insurance Renewal";
+    case "payment":
+      return "Payment Confirmed";
+    case "overdue":
+      return "Payment Overdue";
+    default:
+      return "New Notification";
+  }
+}
+
+// Function to get notification message based on type
+function getNotificationMessage(type, transactionData) {
+  switch (type) {
+    case "transaction":
+      return `${transactionData.firstName} ${transactionData.lastName} has applied for ${transactionData.product} - ${transactionData.option} (₱${transactionData.amount})`;
+    case "renewal":
+      return `${transactionData.firstName} ${transactionData.lastName}'s ${transactionData.product} insurance has been renewed`;
+    case "payment":
+      return `Payment of ₱${transactionData.amount} for ${transactionData.product} has been confirmed`;
+    case "overdue":
+      return `${transactionData.firstName} ${transactionData.lastName}'s ${transactionData.product} payment is overdue`;
+    default:
+      return "You have a new notification";
+  }
+}
+
+// Function to load notifications based on user role
+async function loadNotifications() {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+
+  // Clean up existing listener if any
+  if (notificationsListener) {
+    firebase
+      .database()
+      .ref("notifications")
+      .off("value", notificationsListener);
+    notificationsListener = null;
+  }
+
+  // Get user role and ID
+  const userSnapshot = await firebase
+    .database()
+    .ref(`users/${user.uid}`)
+    .once("value");
+  const userData = userSnapshot.val();
+  currentUserRole = userData?.role || "client";
+  currentUserId = user.uid;
+
+  // Set up real-time listener for notifications
+  const notificationsRef = firebase.database().ref("notifications");
+
+  notificationsListener = (snapshot) => {
+    const notifications = [];
+    snapshot.forEach((child) => {
+      const notification = child.val();
+      if (notification && !notification.deleted) {
+        // Filter out deleted notifications
+        // Filter notifications based on user role
+        if (currentUserRole === "admin") {
+          // Admins see all non-deleted notifications
+          notifications.push(notification);
+        } else {
+          // Clients only see their own non-deleted notifications
+          if (notification.userId === currentUserId) {
+            notifications.push(notification);
+          }
+        }
+      }
+    });
+
+    // Sort by date (newest first)
+    notifications.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Display notifications
+    displayNotifications(notifications);
+    updateNotificationCount(notifications.length);
+  };
+
+  notificationsRef.on("value", notificationsListener);
+}
+
+// Function to display notifications in the UI
+function displayNotifications(notifications) {
+  const notificationList = document.getElementById("notification-list");
+  if (!notificationList) return;
+
+  if (notifications.length === 0) {
+    notificationList.innerHTML = `
+      <div class="notification-item no-notifications">
+        <div class="notification-content">
+          <div class="notification-message">No notifications available</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  notificationList.innerHTML = notifications
+    .map(
+      (notification) => `
+    <div class="notification-item ${notification.type} ${
+        notification.isRead ? "read" : "unread"
+      }" data-id="${notification.id}">
+      <input type="checkbox" class="notification-checkbox" ${
+        notification.isRead ? "checked" : ""
+      } />
+      <div class="notification-content">
+        <div class="notification-title">
+          ${notification.title}
+          <span class="status-badge status-${notification.type}">${
+        notification.type
+      }</span>
+          ${
+            !notification.isRead
+              ? '<span class="unread-indicator">●</span>'
+              : ""
+          }
+        </div>
+        <div class="notification-message">
+          ${notification.message}
+        </div>
+        <div class="notification-time">${formatNotificationTime(
+          notification.date
+        )}</div>
+      </div>
+      <span class="notification-delete" onclick="deleteNotification('${
+        notification.id
+      }')">
+        <i class="fas fa-trash-alt"></i>
+      </span>
+    </div>
+  `
+    )
+    .join("");
+
+  // Re-attach hover effects
+  attachNotificationHoverEffects();
+}
+
+// Function to format notification time
+function formatNotificationTime(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInHours = (now - date) / (1000 * 60 * 60);
+
+  if (diffInHours < 1) {
+    return "Just now";
+  } else if (diffInHours < 24) {
+    return `${Math.floor(diffInHours)} hours ago`;
+  } else if (diffInHours < 48) {
+    return "Yesterday";
+  } else {
+    return date.toLocaleDateString();
+  }
+}
+
+// Function to attach hover effects to notification items
+function attachNotificationHoverEffects() {
+  document.querySelectorAll(".notification-item").forEach((item) => {
+    item.addEventListener("mouseenter", function () {
+      this.querySelector(".notification-delete").style.opacity = "1";
+    });
+    item.addEventListener("mouseleave", function () {
+      this.querySelector(".notification-delete").style.opacity = "0";
+    });
+
+    // Add click handler to mark notification as read
+    item.addEventListener("click", function (e) {
+      // Don't trigger if clicking on checkbox or delete button
+      if (
+        e.target.classList.contains("notification-checkbox") ||
+        e.target.closest(".notification-delete")
+      ) {
+        return;
+      }
+
+      const notificationId = this.getAttribute("data-id");
+      if (notificationId) {
+        markNotificationAsRead(notificationId);
+      }
+    });
+  });
+}
+
+// Function to mark notification as read
+async function markNotificationAsRead(notificationId) {
+  await firebase
+    .database()
+    .ref(`notifications/${notificationId}/isRead`)
+    .set(true);
+}
+
+// Function to delete notification (mark as deleted instead of removing)
+async function deleteNotification(notificationId) {
+  await firebase
+    .database()
+    .ref(`notifications/${notificationId}/deleted`)
+    .set(true);
+}
+
+// Function to mark all notifications as read
+async function markAllAsRead() {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+
+  const notificationsRef = firebase.database().ref("notifications");
+  const updates = {};
+
+  if (currentUserRole === "admin") {
+    // Mark all notifications as read for admins
+    const snapshot = await notificationsRef.once("value");
+    snapshot.forEach((child) => {
+      updates[`${child.key}/isRead`] = true;
+    });
+  } else {
+    // Mark only user's notifications as read for clients
+    const snapshot = await notificationsRef
+      .orderByChild("userId")
+      .equalTo(currentUserId)
+      .once("value");
+    snapshot.forEach((child) => {
+      updates[`${child.key}/isRead`] = true;
+    });
+  }
+
+  if (Object.keys(updates).length > 0) {
+    await firebase.database().ref().update(updates);
+  }
+}
+
+// Function to delete selected notifications (mark as deleted instead of removing)
+async function deleteSelectedNotifications() {
+  const checkboxes = document.querySelectorAll(
+    ".notification-checkbox:checked"
+  );
+  const user = firebase.auth().currentUser;
+  if (!user || checkboxes.length === 0) return;
+
+  const updates = {};
+  checkboxes.forEach((checkbox) => {
+    const notification = checkbox.closest(".notification-item");
+    if (notification) {
+      const id = notification.getAttribute("data-id");
+      updates[`notifications/${id}/deleted`] = true; // Mark as deleted
+    }
+  });
+
+  if (Object.keys(updates).length > 0) {
+    await firebase.database().ref().update(updates);
+  }
+}
+
+// Function to update notification count
+function updateNotificationCount(count) {
+  const badge = document.querySelector(".badge");
+  if (badge) badge.textContent = count;
+
+  // Update sidebar notification bubble
+  const sidebarBadge = document.querySelector(".sidebar-badge");
+  if (sidebarBadge) sidebarBadge.textContent = count;
+}
+
+// Function to clean up duplicate notifications
+async function cleanupDuplicateNotifications() {
+  const notificationsSnapshot = await firebase
+    .database()
+    .ref("notifications")
+    .once("value");
+
+  const transactionGroups = {};
+  const updates = {};
+
+  // Group notifications by transactionId
+  notificationsSnapshot.forEach((child) => {
+    const notification = child.val();
+    if (notification && notification.transactionId && !notification.deleted) {
+      if (!transactionGroups[notification.transactionId]) {
+        transactionGroups[notification.transactionId] = [];
+      }
+      transactionGroups[notification.transactionId].push({
+        id: child.key,
+        ...notification,
+      });
+    }
+  });
+
+  // For each transactionId, keep only the first transaction notification and mark others as deleted
+  Object.keys(transactionGroups).forEach((transactionId) => {
+    const notifications = transactionGroups[transactionId];
+    const transactionNotifications = notifications.filter(
+      (n) => n.type === "transaction"
+    );
+
+    if (transactionNotifications.length > 1) {
+      // Keep the first one, mark the rest as deleted
+      const toDelete = transactionNotifications.slice(1);
+      toDelete.forEach((notification) => {
+        updates[`notifications/${notification.id}/deleted`] = true;
+      });
+      console.log(
+        `Marked ${toDelete.length} duplicate transaction notifications as deleted for transactionId: ${transactionId}`
+      );
+    }
+  });
+
+  // Apply updates if any
+  if (Object.keys(updates).length > 0) {
+    await firebase.database().ref().update(updates);
+    console.log("Cleanup completed: Duplicate notifications marked as deleted");
+  }
+}
+
+// Function to set up transaction listeners for notifications
+function setupTransactionNotificationListeners() {
+  // Clean up existing transaction listeners
+  transactionListeners.forEach((listener) => {
+    firebase.database().ref("transactions").off("child_added", listener);
+    firebase.database().ref("transactions").off("child_changed", listener);
+  });
+  transactionListeners = [];
+
+  // Listen for transaction updates (for status changes only)
+  // We don't listen for child_added because notifications are already created
+  // during registration and dashboard "Add" operations
+  const childChangedListener = (snapshot) => {
+    const transactionData = snapshot.val();
+    if (transactionData) {
+      // Create notification for status changes only
+      if (transactionData.status === "Overdue") {
+        createNotification(transactionData, "overdue");
+      } else if (transactionData.status === "Renewed") {
+        createNotification(transactionData, "renewal");
+      }
+    }
+  };
+
+  firebase
+    .database()
+    .ref("transactions")
+    .on("child_changed", childChangedListener);
+
+  // Store listeners for cleanup
+  transactionListeners.push(childChangedListener);
+}
