@@ -119,6 +119,20 @@
         border-radius: 20px;
         outline: none;
         width: 98%;
+        transition: all 0.3s ease;
+      }
+
+      .form-group input:hover,
+      .form-group select:hover {
+        border-color: #005fa3;
+        box-shadow: 0 0 5px rgba(0, 95, 163, 0.2);
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: #005fa3;
+        box-shadow: 0 0 8px rgba(0, 95, 163, 0.3);
+        transform: translateY(-1px);
       }
 
       .footer {
@@ -141,10 +155,26 @@
         border: none;
         border-radius: 20px;
         cursor: pointer;
+        transition: all 0.3s ease;
       }
 
       .btn:hover {
         background-color: #004c82;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 95, 163, 0.3);
+      }
+
+      .btn:focus {
+        background-color: #004c82;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 95, 163, 0.3);
+        outline: 2px solid #005fa3;
+        outline-offset: 2px;
+      }
+
+      .btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(0, 95, 163, 0.3);
       }
 
       .scrollable-content::-webkit-scrollbar {
