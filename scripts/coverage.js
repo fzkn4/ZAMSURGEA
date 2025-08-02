@@ -202,11 +202,15 @@ document
                         userId: user.uid,
                       };
                       const transaction = {
+                        id: newId,
+                        firstName: profile.firstName || "",
+                        lastName: profile.lastName || "",
+                        product: coverage.insuranceProduct,
+                        option: coverage.optionNo,
+                        amount: coverage.depositAmount,
+                        date: new Date().toISOString(),
                         userId: user.uid,
                         email: account.email,
-                        insuranceProduct: coverage.insuranceProduct,
-                        optionNo: coverage.optionNo,
-                        depositAmount: coverage.depositAmount,
                         effectivity: coverage.effectivity,
                         validUntil: coverage.validUntil,
                         referrer: coverage.referrer,
@@ -215,6 +219,29 @@ document
                       const updates = {};
                       updates[productPath + "/" + newId] = productData;
                       updates["transactions/" + newId] = transaction;
+
+                      // Create notification for the new transaction
+                      const notificationId = firebase
+                        .database()
+                        .ref("notifications")
+                        .push().key;
+                      const notification = {
+                        id: notificationId,
+                        type: "transaction",
+                        title: `New ${coverage.insuranceProduct} Transaction`,
+                        message: `${profile.firstName} ${profile.lastName} has applied for ${coverage.insuranceProduct} - ${coverage.optionNo} (₱${coverage.depositAmount})`,
+                        transactionId: newId,
+                        userId: user.uid,
+                        product: coverage.insuranceProduct,
+                        amount: coverage.depositAmount,
+                        date: new Date().toISOString(),
+                        isRead: false,
+                        deleted: false,
+                        forAdmins: true,
+                        forClient: true,
+                      };
+                      updates["notifications/" + notificationId] = notification;
+
                       firebase
                         .database()
                         .ref()
